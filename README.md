@@ -2,6 +2,8 @@
 
 Terraform module which creates AWS EMR resources.
 
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
+
 This module supports the creation of:
 - EMR clusters using instance fleets or instance groups deployed in public or private subnets
 - EMR Virtual clusters that run on Amazon EKS

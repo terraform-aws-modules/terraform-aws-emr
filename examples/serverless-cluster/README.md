@@ -1,4 +1,4 @@
-# AWS EMR Virtual Cluster Example
+# AWS EMR Serverless Cluster Example
 
 Configuration in this directory creates:
 

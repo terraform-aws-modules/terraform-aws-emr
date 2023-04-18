@@ -32,6 +32,12 @@ variable "auto_stop_configuration" {
   default     = {}
 }
 
+variable "image_configuration" {
+  description = "The image configuration applied to all worker types"
+  type        = any
+  default     = {}
+}
+
 variable "initial_capacity" {
   description = "The capacity to initialize when the application is created"
   type        = any

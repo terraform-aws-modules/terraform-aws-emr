@@ -83,6 +83,14 @@ resource "aws_emrserverless_application" "this" {
     }
   }
 
+  dynamic "image_configuration" {
+    for_each = length(var.image_configuration) > 0 ? [var.image_configuration] : []
+
+    content {
+      image_uri         = image_configuration.value.image_uri
+    }
+  }
+
   release_label = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
   type          = var.type
 

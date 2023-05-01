@@ -134,13 +134,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.42 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.62 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.42 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.62 |
 
 ## Modules
 
@@ -165,6 +165,7 @@ No modules.
 | <a name="input_auto_stop_configuration"></a> [auto\_stop\_configuration](#input\_auto\_stop\_configuration) | The configuration for an application to automatically stop after a certain amount of time being idle | `any` | `{}` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_create_security_group"></a> [create\_security\_group](#input\_create\_security\_group) | Determines whether the security group is created | `bool` | `true` | no |
+| <a name="input_image_configuration"></a> [image\_configuration](#input\_image\_configuration) | The image configuration applied to all worker types | `any` | `{}` | no |
 | <a name="input_initial_capacity"></a> [initial\_capacity](#input\_initial\_capacity) | The capacity to initialize when the application is created | `any` | `{}` | no |
 | <a name="input_maximum_capacity"></a> [maximum\_capacity](#input\_maximum\_capacity) | The maximum capacity to allocate when the application is created. This is cumulative across all workers at any given point in time, not just when an application is created. No new resources will be created once any one of the defined limits is hit | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the application | `string` | `""` | no |

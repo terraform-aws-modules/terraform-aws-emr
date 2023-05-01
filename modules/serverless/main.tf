@@ -87,7 +87,7 @@ resource "aws_emrserverless_application" "this" {
     for_each = length(var.image_configuration) > 0 ? [var.image_configuration] : []
 
     content {
-      image_uri         = image_configuration.value.image_uri
+      image_uri = image_configuration.value.image_uri
     }
   }
 

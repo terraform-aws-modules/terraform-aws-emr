@@ -155,7 +155,7 @@ data "aws_iam_policy_document" "service" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/for-use-with-amazon-emr-managed-policies"
+      variable = "aws:RequestTag/for-use-with-amazon-emr-managed-policies"
       values   = ["true"]
     }
   }
@@ -179,7 +179,7 @@ data "aws_iam_policy_document" "service" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/for-use-with-amazon-emr-managed-policies"
+      variable = "aws:RequestTag/for-use-with-amazon-emr-managed-policies"
       values   = ["true"]
     }
 
@@ -197,7 +197,7 @@ data "aws_iam_policy_document" "service" {
 
     condition {
       test     = "StringEquals"
-      variable = "aws:ResourceTag/for-use-with-amazon-emr-managed-policies"
+      variable = "aws:RequestTag/for-use-with-amazon-emr-managed-policies"
       values   = ["true"]
     }
   }

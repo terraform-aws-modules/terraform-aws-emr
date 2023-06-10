@@ -44,7 +44,7 @@ Note that this example may create resources which will incur monetary charges on
 | <a name="module_emr_serverless_disabled"></a> [emr\_serverless\_disabled](#module\_emr\_serverless\_disabled) | ../../modules/serverless | n/a |
 | <a name="module_emr_serverless_hive"></a> [emr\_serverless\_hive](#module\_emr\_serverless\_hive) | ../../modules/serverless | n/a |
 | <a name="module_emr_serverless_spark"></a> [emr\_serverless\_spark](#module\_emr\_serverless\_spark) | ../../modules/serverless | n/a |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
 ## Resources
 

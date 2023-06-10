@@ -38,8 +38,8 @@ $ terraform apply
 | <a name="module_emr_studio_disabled"></a> [emr\_studio\_disabled](#module\_emr\_studio\_disabled) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_iam"></a> [emr\_studio\_iam](#module\_emr\_studio\_iam) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_sso"></a> [emr\_studio\_sso](#module\_emr\_studio\_sso) | ../../modules/studio | n/a |
-| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> v3.0 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 3.0 |
+| <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> 3.0 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
 ## Resources
 

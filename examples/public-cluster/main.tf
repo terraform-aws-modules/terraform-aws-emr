@@ -247,7 +247,7 @@ module "emr_instance_group" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 3.0"
+  version = "~> 5.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -255,8 +255,7 @@ module "vpc" {
   azs            = local.azs
   public_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
 
-  enable_nat_gateway   = false
-  enable_dns_hostnames = true
+  enable_nat_gateway = false
 
   # https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
   # Tag if you want EMR to create the security groups for you
@@ -271,7 +270,7 @@ module "vpc" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> v3.0"
+  version = "~> 3.0"
 
   bucket_prefix = "${local.name}-"
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.0...v1.1.1) (2023-06-10)
+
+
+### Bug Fixes
+
+* Correct S3 bucket access permission to try user provided S3 bucket ARNs first before falling back to default ([#8](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/8)) ([ae366ed](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/ae366ed81939a06a00c843edbf01097edee2353a))
+
 ## [1.1.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.0.0...v1.1.0) (2023-05-18)
 
 

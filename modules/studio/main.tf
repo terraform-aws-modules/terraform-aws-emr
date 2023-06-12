@@ -291,7 +291,7 @@ data "aws_iam_policy_document" "service" {
       "s3:DeleteObject",
     ]
     resources = coalescelist(
-      [var.service_role_s3_bucket_arns],
+      var.service_role_s3_bucket_arns,
       ["arn:${local.partition}:s3:::*"]
     )
   }

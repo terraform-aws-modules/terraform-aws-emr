@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.2](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.1...v1.1.2) (2023-06-12)
+
+
+### Bug Fixes
+
+* Remove wrapping list brackets from S3 bucket ARNs variable ([#9](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/9)) ([2317c56](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/2317c56f9b6715224af6eba4e7fe54ec0f0d4217))
+
 ### [1.1.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.0...v1.1.1) (2023-06-10)
 
 

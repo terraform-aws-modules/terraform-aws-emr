@@ -91,7 +91,7 @@ resource "kubernetes_role_v1" "this" {
   }
 
   rule {
-    api_groups = ["extensions"]
+    api_groups = ["extensions", "networking.k8s.io"]
     resources  = ["ingresses"]
     verbs      = ["get", "list", "watch", "describe", "create", "edit", "delete", "annotate", "patch", "label"]
   }
@@ -100,6 +100,12 @@ resource "kubernetes_role_v1" "this" {
     api_groups = ["rbac.authorization.k8s.io"]
     resources  = ["roles", "rolebindings"]
     verbs      = ["get", "list", "watch", "describe", "create", "edit", "delete", "deletecollection", "annotate", "patch", "label"]
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["persistentvolumeclaims"]
+    verbs      = ["get", "list", "watch", "describe", "create", "edit", "delete", "annotate", "patch", "label"]
   }
 }
 

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.3](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.2...v1.1.3) (2023-07-18)
+
+
+### Bug Fixes
+
+* Updating Kubernetes Role for EMR Virtual Cluster ([#12](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/12)) ([05bc754](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/05bc754beddd0156271f05ccfd8702b9a6ba07b2))
+
 ### [1.1.2](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.1...v1.1.2) (2023-06-12)
 
 

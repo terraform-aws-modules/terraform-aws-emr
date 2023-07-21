@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.3...v1.2.0) (2023-07-21)
+
+
+### Features
+
+* Allowing Custom CloudWatch Log Group Name or Prefix ([#13](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/13)) ([1be0b5e](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/1be0b5e325f6ac458773c7eddc469397b57795a5))
+
 ### [1.1.3](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.2...v1.1.3) (2023-07-18)
 
 

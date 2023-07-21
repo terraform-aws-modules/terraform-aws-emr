@@ -145,3 +145,27 @@ variable "cloudwatch_log_group_kms_key_id" {
   type        = string
   default     = null
 }
+
+variable "cloudwatch_log_group_name" {
+  description = "The custom name for the AWS CloudWatch log group. If 'cloudwatch_log_group_use_name_prefix' is false or not provided, this custom name will be used. If empty, a default name will be generated."
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_use_name_prefix" {
+  description = "Specifies whether to use a custom prefix for the log group name. If true, the log group name will have a custom prefix provided through the 'cloudwatch_log_group_name_prefix' variable."
+  type        = bool
+  default     = true
+}
+
+variable "cloudwatch_log_group_name_prefix" {
+  description = "The custom prefix to be used for the log group name, only if 'cloudwatch_log_group_use_name_prefix' is true. If empty, a default prefix will be used."
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_skip_destroy" {
+  description = "If true, skips the destruction of the AWS CloudWatch log group during resource removal. Use with caution, as it may lead to unintended retention of log data."
+  type        = bool
+  default     = false
+}

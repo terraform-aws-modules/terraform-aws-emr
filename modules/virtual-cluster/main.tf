@@ -269,9 +269,11 @@ resource "aws_iam_role_policy_attachment" "additional" {
 resource "aws_cloudwatch_log_group" "this" {
   count = var.create && var.create_cloudwatch_log_group ? 1 : 0
 
-  name              = "/emr-on-eks-logs/emr-workload/${local.namespace}"
+  name              = var.cloudwatch_log_group_use_name_prefix ? null : coalesce(var.cloudwatch_log_group_name, "/emr-on-eks-logs/emr-workload/${local.namespace}")
+  name_prefix       = var.cloudwatch_log_group_use_name_prefix ? coalesce(var.cloudwatch_log_group_name_prefix, "/emr-on-eks-logs/emr-workload/${local.namespace}/") : null
   retention_in_days = var.cloudwatch_log_group_retention_in_days
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
+  skip_destroy      = try(var.cloudwatch_log_group_skip_destroy, false)
 
   tags = local.tags
 }

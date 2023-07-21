@@ -147,25 +147,19 @@ variable "cloudwatch_log_group_kms_key_id" {
 }
 
 variable "cloudwatch_log_group_name" {
-  description = "The custom name for the AWS CloudWatch log group. If 'cloudwatch_log_group_use_name_prefix' is false or not provided, this custom name will be used. If empty, a default name will be generated."
+  description = "The name of the log group. If a name is not provided, the default name format used is: `/emr-on-eks-logs/emr-workload/<NAMESPACE>`"
   type        = string
   default     = null
 }
 
 variable "cloudwatch_log_group_use_name_prefix" {
-  description = "Specifies whether to use a custom prefix for the log group name. If true, the log group name will have a custom prefix provided through the 'cloudwatch_log_group_name_prefix' variable."
+  description = "Determines whether the log group name (`cloudwatch_log_group_name`) is used as a prefix"
   type        = bool
-  default     = true
-}
-
-variable "cloudwatch_log_group_name_prefix" {
-  description = "The custom prefix to be used for the log group name, only if 'cloudwatch_log_group_use_name_prefix' is true. If empty, a default prefix will be used."
-  type        = string
-  default     = null
+  default     = false
 }
 
 variable "cloudwatch_log_group_skip_destroy" {
-  description = "If true, skips the destruction of the AWS CloudWatch log group during resource removal. Use with caution, as it may lead to unintended retention of log data."
+  description = "Set to 'true' if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the Terraform state"
   type        = bool
-  default     = false
+  default     = null
 }

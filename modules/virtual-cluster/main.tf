@@ -6,8 +6,9 @@ locals {
 
   internal_role_name = try(coalesce(var.role_name, var.name), "")
 
-  role_name = var.create_kubernetes_role ? kubernetes_role_v1.this[0].metadata[0].name : local.internal_role_name
-  namespace = var.create_namespace ? kubernetes_namespace_v1.this[0].metadata[0].name : var.namespace
+  role_name                 = var.create_kubernetes_role ? kubernetes_role_v1.this[0].metadata[0].name : local.internal_role_name
+  namespace                 = var.create_namespace ? kubernetes_namespace_v1.this[0].metadata[0].name : var.namespace
+  cloudwatch_log_group_name = coalesce(var.cloudwatch_log_group_name, "/emr-on-eks-logs/emr-workload/${local.namespace}")
 
   tags = merge(var.tags, { terraform-aws-modules = "emr" })
 }
@@ -269,9 +270,11 @@ resource "aws_iam_role_policy_attachment" "additional" {
 resource "aws_cloudwatch_log_group" "this" {
   count = var.create && var.create_cloudwatch_log_group ? 1 : 0
 
-  name              = "/emr-on-eks-logs/emr-workload/${local.namespace}"
+  name              = var.cloudwatch_log_group_use_name_prefix ? null : local.cloudwatch_log_group_name
+  name_prefix       = var.cloudwatch_log_group_use_name_prefix ? "${local.cloudwatch_log_group_name}-" : null
   retention_in_days = var.cloudwatch_log_group_retention_in_days
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
+  skip_destroy      = var.cloudwatch_log_group_skip_destroy
 
   tags = local.tags
 }

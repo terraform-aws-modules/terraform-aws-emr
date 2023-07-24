@@ -319,8 +319,8 @@ module "emr" {
 Examples codified under the [`examples`](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples) are intended to give users references for how to use the module(s) as well as testing/validating changes to the source code of the module. If contributing to the project, please be sure to make any appropriate updates to the relevant examples to allow maintainers to test your changes and to keep the examples up to date for users. Thank you!
 
 - [Private clusters](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/private-cluster) using instance fleet or instance group
-- [Public clusters](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/private-cluster) using instance fleet or instance group
-- [Serverless clusters](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/virtual-cluster) running Spark or Hive
+- [Public clusters](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/public-cluster) using instance fleet or instance group
+- [Serverless clusters](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/serverless-cluster) running Spark or Hive
 - [Studios](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/studio) with either IAM or SSO authentication
 - [Virtual cluster](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/virtual-cluster) running on Amazon EKS
 

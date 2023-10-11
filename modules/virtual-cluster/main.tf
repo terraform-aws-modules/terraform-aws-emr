@@ -147,17 +147,6 @@ data "aws_iam_policy_document" "assume" {
   count = local.create_iam_role ? 1 : 0
 
   statement {
-    sid     = "EMR"
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["elasticmapreduce.${data.aws_partition.current.dns_suffix}"]
-    }
-  }
-
-  statement {
     sid     = "IRSA"
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.2.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.0...v1.2.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* Add `"deletecollection"` verb to `"persistentvolumeclaims"` Kubernetes RBAC permission ([#17](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/17)) ([668f09b](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/668f09bcb2eb3dbac1be59648f00a4a7acbf832f))
+
 ## [1.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.1.3...v1.2.0) (2023-07-21)
 
 

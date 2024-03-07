@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.1...v1.2.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* Update CI workflow versions to remove deprecated runtime warnings ([#18](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/18)) ([faf4d0b](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/faf4d0bfc218bc70d2124bed5e52780bb0856c2d))
+
 ### [1.2.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.0...v1.2.1) (2024-02-08)
 
 

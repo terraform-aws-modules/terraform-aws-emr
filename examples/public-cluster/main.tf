@@ -81,11 +81,11 @@ module "emr_instance_fleet" {
       },
       {
         bid_price_as_percentage_of_on_demand_price = 100
-        ebs_config = {
-          size                 = 64
+        ebs_config = [{
+          size                 = 256
           type                 = "gp3"
           volumes_per_instance = 1
-        }
+        }]
         instance_type     = "c5.xlarge"
         weighted_capacity = 2
       },
@@ -116,11 +116,11 @@ module "emr_instance_fleet" {
       },
       {
         bid_price_as_percentage_of_on_demand_price = 100
-        ebs_config = {
-          size                 = 64
+        ebs_config = [{
+          size                 = 256
           type                 = "gp3"
           volumes_per_instance = 1
-        }
+        }]
         instance_type     = "c5.xlarge"
         weighted_capacity = 2
       }
@@ -212,11 +212,11 @@ module "emr_instance_group" {
     instance_type  = "c5.xlarge"
     bid_price      = "0.1"
 
-    ebs_config = {
-      size                 = 64
+    ebs_config = [{
+      size                 = 256
       type                 = "gp3"
       volumes_per_instance = 1
-    }
+    }]
     ebs_optimized = true
   }
 
@@ -270,7 +270,7 @@ module "vpc" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   bucket_prefix = "${local.name}-"
 

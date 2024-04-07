@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.2...v2.0.0) (2024-04-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* Add support for placement group config and unhealthy node replacement; raise AWS provider MSV to v5.44 (#21)
+
+### Features
+
+* Add support for placement group config and unhealthy node replacement; raise AWS provider MSV to v5.44 ([#21](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/21)) ([eff2018](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/eff2018e7aeffdd260c21b9251275fa8342c34de))
+
 ## [1.2.2](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.1...v1.2.2) (2024-03-07)
 
 

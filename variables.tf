@@ -128,6 +128,12 @@ variable "name" {
   default     = ""
 }
 
+variable "placement_group_config" {
+  description = "The specified placement group configuration"
+  type        = any
+  default     = {}
+}
+
 variable "release_label" {
   description = "Release label for the Amazon EMR release"
   type        = string
@@ -165,6 +171,12 @@ variable "step_concurrency_level" {
 
 variable "termination_protection" {
   description = "Switch on/off termination protection (default is `false`, except when using multiple master nodes). Before attempting to destroy the resource when termination protection is enabled, this configuration must be applied with its value set to `false`"
+  type        = bool
+  default     = null
+}
+
+variable "unhealthy_node_replacement" {
+  description = "Whether whether Amazon EMR should gracefully replace core nodes that have degraded within the cluster. Default value is `false`"
   type        = bool
   default     = null
 }

@@ -146,10 +146,11 @@ module "emr_instance_fleet" {
   list_steps_states                 = ["PENDING", "RUNNING", "CANCEL_PENDING", "CANCELLED", "FAILED", "INTERRUPTED", "COMPLETED"]
   log_uri                           = "s3://${module.s3_bucket.s3_bucket_id}/"
 
-  scale_down_behavior    = "TERMINATE_AT_TASK_COMPLETION"
-  step_concurrency_level = 3
-  termination_protection = false
-  visible_to_all_users   = true
+  scale_down_behavior        = "TERMINATE_AT_TASK_COMPLETION"
+  step_concurrency_level     = 3
+  termination_protection     = false
+  unhealthy_node_replacement = true
+  visible_to_all_users       = true
 
   tags = local.tags
 }
@@ -191,6 +192,14 @@ module "emr_instance_group" {
       "Properties" : {}
     }
   ])
+
+  #  Example placement group config for multiple primary node clusters
+  #  placement_group_config = [
+  #    {
+  #      instance_role      = "MASTER"
+  #      placement_strategy = "SPREAD"
+  #    }
+  #  ]
 
   master_instance_group = {
     name           = "master-group"

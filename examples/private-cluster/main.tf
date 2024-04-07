@@ -193,6 +193,14 @@ module "emr_instance_group" {
     }
   ])
 
+  #  Example placement group config for multiple primary node clusters
+  #  placement_group_config = [
+  #    {
+  #      instance_role      = "MASTER"
+  #      placement_strategy = "SPREAD"
+  #    }
+  #  ]
+
   master_instance_group = {
     name           = "master-group"
     instance_count = 1

@@ -330,13 +330,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4.42 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.44 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.42 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.44 |
 
 ## Modules
 
@@ -421,6 +421,7 @@ No modules.
 | <a name="input_master_security_group_description"></a> [master\_security\_group\_description](#input\_master\_security\_group\_description) | Description of the security group created | `string` | `"Managed master security group"` | no |
 | <a name="input_master_security_group_rules"></a> [master\_security\_group\_rules](#input\_master\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br>  "default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Allow all egress traffic",<br>    "from_port": 0,<br>    "ipv6_cidr_blocks": [<br>      "::/0"<br>    ],<br>    "protocol": "-1",<br>    "to_port": 0,<br>    "type": "egress"<br>  }<br>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the job flow | `string` | `""` | no |
+| <a name="input_placement_group_config"></a> [placement\_group\_config](#input\_placement\_group\_config) | The specified placement group configuration | `any` | `{}` | no |
 | <a name="input_release_label"></a> [release\_label](#input\_release\_label) | Release label for the Amazon EMR release | `string` | `null` | no |
 | <a name="input_release_label_filters"></a> [release\_label\_filters](#input\_release\_label\_filters) | Map of release label filters use to lookup a release label | `any` | <pre>{<br>  "default": {<br>    "prefix": "emr-6"<br>  }<br>}</pre> | no |
 | <a name="input_scale_down_behavior"></a> [scale\_down\_behavior](#input\_scale\_down\_behavior) | Way that individual Amazon EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized | `string` | `"TERMINATE_AT_TASK_COMPLETION"` | no |
@@ -443,6 +444,7 @@ No modules.
 | <a name="input_task_instance_fleet"></a> [task\_instance\_fleet](#input\_task\_instance\_fleet) | Configuration block to use an [Instance Fleet](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html) for the task node type. Cannot be specified if any `task_instance_group` configuration blocks are set | `any` | `{}` | no |
 | <a name="input_task_instance_group"></a> [task\_instance\_group](#input\_task\_instance\_group) | Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [task node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master) | `any` | `{}` | no |
 | <a name="input_termination_protection"></a> [termination\_protection](#input\_termination\_protection) | Switch on/off termination protection (default is `false`, except when using multiple master nodes). Before attempting to destroy the resource when termination protection is enabled, this configuration must be applied with its value set to `false` | `bool` | `null` | no |
+| <a name="input_unhealthy_node_replacement"></a> [unhealthy\_node\_replacement](#input\_unhealthy\_node\_replacement) | Whether whether Amazon EMR should gracefully replace core nodes that have degraded within the cluster. Default value is `false` | `bool` | `null` | no |
 | <a name="input_visible_to_all_users"></a> [visible\_to\_all\_users](#input\_visible\_to\_all\_users) | Whether the job flow is visible to all IAM users of the AWS account associated with the job flow. Default value is `true` | `bool` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the Amazon Virtual Private Cloud (Amazon VPC) where the security groups will be created | `string` | `""` | no |
 

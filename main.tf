@@ -272,6 +272,15 @@ resource "aws_emr_cluster" "this" {
     }
   }
 
+  dynamic "placement_group_config" {
+    for_each = var.placement_group_config
+
+    content {
+      instance_role      = placement_group_config.value.instance_role
+      placement_strategy = try(placement_group_config.value.placement_strategy, null)
+    }
+  }
+
   name                   = var.name
   release_label          = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
   scale_down_behavior    = var.scale_down_behavior
@@ -299,9 +308,10 @@ resource "aws_emr_cluster" "this" {
     }
   }
 
-  step_concurrency_level = var.step_concurrency_level
-  termination_protection = var.termination_protection
-  visible_to_all_users   = var.visible_to_all_users
+  step_concurrency_level     = var.step_concurrency_level
+  termination_protection     = var.termination_protection
+  unhealthy_node_replacement = var.unhealthy_node_replacement
+  visible_to_all_users       = var.visible_to_all_users
 
   tags = merge(
     local.tags,

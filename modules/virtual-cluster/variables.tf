@@ -79,7 +79,7 @@ variable "oidc_provider_arn" {
 variable "s3_bucket_arns" {
   description = "S3 bucket ARNs for EMR on EKS job execution role to list, get objects, and put objects"
   type        = list(string)
-  default     = ["*"]
+  default     = []
 }
 
 variable "role_name" {

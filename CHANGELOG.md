@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.0.0...v2.1.0) (2024-05-04)
+
+
+### Features
+
+* Reset default value of s3_bucket_arns to empty ([#23](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/23)) ([d8d79df](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/d8d79df4dfe1c590c369ebb939a9e262de6cd42a))
+
 ## [2.0.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v1.2.2...v2.0.0) (2024-04-07)
 
 

@@ -134,13 +134,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.44 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.59 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.44 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.59 |
 
 ## Modules
 
@@ -167,6 +167,7 @@ No modules.
 | <a name="input_create_security_group"></a> [create\_security\_group](#input\_create\_security\_group) | Determines whether the security group is created | `bool` | `true` | no |
 | <a name="input_image_configuration"></a> [image\_configuration](#input\_image\_configuration) | The image configuration applied to all worker types | `any` | `{}` | no |
 | <a name="input_initial_capacity"></a> [initial\_capacity](#input\_initial\_capacity) | The capacity to initialize when the application is created | `any` | `{}` | no |
+| <a name="input_interactive_configuration"></a> [interactive\_configuration](#input\_interactive\_configuration) | Enables the interactive use cases to use when running an application | `any` | `{}` | no |
 | <a name="input_maximum_capacity"></a> [maximum\_capacity](#input\_maximum\_capacity) | The maximum capacity to allocate when the application is created. This is cumulative across all workers at any given point in time, not just when an application is created. No new resources will be created once any one of the defined limits is hit | `any` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the application | `string` | `""` | no |
 | <a name="input_network_configuration"></a> [network\_configuration](#input\_network\_configuration) | The network configuration for customer VPC connectivity | `any` | `{}` | no |

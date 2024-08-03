@@ -62,6 +62,14 @@ resource "aws_emrserverless_application" "this" {
     }
   }
 
+  dynamic "interactive_configuration" {
+    for_each = length(var.interactive_configuration) > 0 ? [var.interactive_configuration] : []
+    content {
+      livy_endpoint_enabled = try(interactive_configuration.value.livy_endpoint_enabled, null)
+      studio_enabled        = try(interactive_configuration.value.studio_enabled, null)
+    }
+  }
+
   dynamic "maximum_capacity" {
     for_each = length(var.maximum_capacity) > 0 ? [var.maximum_capacity] : []
 

@@ -45,7 +45,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.44 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.59 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.17 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.7 |
@@ -54,7 +54,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.44 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.59 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.7 |
 

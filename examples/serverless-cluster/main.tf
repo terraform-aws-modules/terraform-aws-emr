@@ -74,6 +74,11 @@ module "emr_serverless_spark" {
     }
   }
 
+  interactive_configuration = {
+    livy_endpoint_enabled = true
+    studio_enabled        = true
+  }
+
   tags = local.tags
 }
 

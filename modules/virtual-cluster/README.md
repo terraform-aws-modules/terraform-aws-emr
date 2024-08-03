@@ -141,7 +141,7 @@ No modules.
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Kubernetes namespace for EMR on EKS | `string` | `"emr-containers"` | no |
 | <a name="input_oidc_provider_arn"></a> [oidc\_provider\_arn](#input\_oidc\_provider\_arn) | OIDC provider ARN for the EKS cluster | `string` | `""` | no |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Name to use on IAM role created for EMR on EKS job execution role as well as Kubernetes RBAC role | `string` | `null` | no |
-| <a name="input_s3_bucket_arns"></a> [s3\_bucket\_arns](#input\_s3\_bucket\_arns) | S3 bucket ARNs for EMR on EKS job execution role to list, get objects, and put objects | `list(string)` | <pre>[<br>  "*"<br>]</pre> | no |
+| <a name="input_s3_bucket_arns"></a> [s3\_bucket\_arns](#input\_s3\_bucket\_arns) | S3 bucket ARNs for EMR on EKS job execution role to list, get objects, and put objects | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |
 
 ## Outputs

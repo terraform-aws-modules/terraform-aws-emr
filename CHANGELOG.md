@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.1.0...v2.2.0) (2024-08-03)
+
+
+### Features
+
+* Support interactive configuration block for EMR serverless application ([#27](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/27)) ([2e7045e](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/2e7045e99ee36bb93be4036388f01bbf4fcdbcdd))
+
 ## [2.1.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.0.0...v2.1.0) (2024-05-04)
 
 

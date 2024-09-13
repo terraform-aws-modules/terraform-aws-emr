@@ -378,7 +378,7 @@ variable "iam_instance_profile_policies" {
 }
 
 variable "iam_instance_profile_role_arn" {
-  description = "The role associated with the ec2 instance profile if specifying a custom instance profile"
+  description = "The ARN of an existing IAM role to use if passing in a custom instance profile and creating a service role"
   type        = string
   default     = null
 }

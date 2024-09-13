@@ -158,7 +158,8 @@ module "emr_instance_fleet" {
 module "emr_instance_group" {
   source = "../.."
 
-  name = "${local.name}-instance-group"
+  name                        = "${local.name}-instance-group"
+  create_iam_instance_profile = false
 
   release_label_filters = {
     emr6 = {
@@ -230,8 +231,11 @@ module "emr_instance_group" {
   ebs_root_volume_size = 64
   ec2_attributes = {
     # Instance groups only support one Subnet/AZ
-    subnet_id = element(module.vpc.private_subnets, 0)
+    subnet_id        = element(module.vpc.private_subnets, 0)
+    instance_profile = aws_iam_instance_profile.custom_instance_profile.arn
   }
+  iam_instance_profile_role_arn = aws_iam_role.custom_instance_profile.arn
+
   vpc_id = module.vpc.vpc_id
 
   keep_job_flow_alive_when_no_steps = true
@@ -356,4 +360,34 @@ module "s3_bucket" {
   }
 
   tags = local.tags
+}
+
+resource "aws_iam_role" "custom_instance_profile" {
+  name               = "test"
+  assume_role_policy = data.aws_iam_policy_document.assume.json
+}
+
+data "aws_iam_policy_document" "assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      identifiers = ["ec2.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "test" {
+  role       = aws_iam_role.custom_instance_profile.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "custom_instance_profile" {
+  role = aws_iam_role.custom_instance_profile.name
+
+  name = "custom-instance-profile"
+
+  depends_on = [
+    aws_iam_role_policy_attachment.test,
+  ]
 }

@@ -330,13 +330,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.59 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.65 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.59 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.65 |
 
 ## Modules
 
@@ -402,6 +402,7 @@ No modules.
 | <a name="input_iam_instance_profile_description"></a> [iam\_instance\_profile\_description](#input\_iam\_instance\_profile\_description) | Description of the EC2 IAM role/instance profile | `string` | `null` | no |
 | <a name="input_iam_instance_profile_name"></a> [iam\_instance\_profile\_name](#input\_iam\_instance\_profile\_name) | Name to use on EC2 IAM role/instance profile created | `string` | `null` | no |
 | <a name="input_iam_instance_profile_policies"></a> [iam\_instance\_profile\_policies](#input\_iam\_instance\_profile\_policies) | Map of IAM policies to attach to the EC2 IAM role/instance profile | `map(string)` | <pre>{<br>  "AmazonElasticMapReduceforEC2Role": "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"<br>}</pre> | no |
+| <a name="input_iam_instance_profile_role_arn"></a> [iam\_instance\_profile\_role\_arn](#input\_iam\_instance\_profile\_role\_arn) | The role associated with the ec2 instance profile if specifying a custom instance profile | `string` | `null` | no |
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | IAM role path | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |

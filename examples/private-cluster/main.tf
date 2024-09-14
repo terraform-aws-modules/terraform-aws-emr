@@ -4,6 +4,12 @@ provider "aws" {
 
 data "aws_availability_zones" "available" {}
 
+data "aws_partition" "current" {}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
   region = "eu-west-1"
@@ -160,6 +166,7 @@ module "emr_instance_group" {
 
   name                        = "${local.name}-instance-group"
   create_iam_instance_profile = false
+  create_autoscaling_iam_role = false
 
   release_label_filters = {
     emr6 = {
@@ -235,6 +242,7 @@ module "emr_instance_group" {
     instance_profile = aws_iam_instance_profile.custom_instance_profile.arn
   }
   iam_instance_profile_role_arn = aws_iam_role.custom_instance_profile.arn
+  autoscaling_iam_role_arn      = aws_iam_role.autoscaling.arn
 
   vpc_id = module.vpc.vpc_id
 
@@ -390,4 +398,41 @@ resource "aws_iam_instance_profile" "custom_instance_profile" {
   depends_on = [
     aws_iam_role_policy_attachment.emr_for_ec2,
   ]
+}
+
+resource "aws_iam_role" "autoscaling" {
+  name               = "custom-autoscaling-role"
+  assume_role_policy = data.aws_iam_policy_document.autoscaling.json
+}
+
+data "aws_iam_policy_document" "autoscaling" {
+  statement {
+    sid     = "EMRAssumeRole"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type = "Service"
+      identifiers = [
+        "elasticmapreduce.${data.aws_partition.current.dns_suffix}",
+        "application-autoscaling.${data.aws_partition.current.dns_suffix}"
+      ]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+
+    condition {
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "autoscaling" {
+  role       = aws_iam_role.autoscaling.name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole"
 }

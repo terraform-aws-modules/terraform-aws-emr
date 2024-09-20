@@ -371,7 +371,7 @@ module "s3_bucket" {
 }
 
 resource "aws_iam_role" "custom_instance_profile" {
-  name               = "custom-instance-profile"
+  name_prefix        = "custom-instance-profile"
   assume_role_policy = data.aws_iam_policy_document.assume.json
 }
 
@@ -401,7 +401,7 @@ resource "aws_iam_instance_profile" "custom_instance_profile" {
 }
 
 resource "aws_iam_role" "autoscaling" {
-  name               = "custom-autoscaling-role"
+  name_prefix        = "custom-autoscaling-role"
   assume_role_policy = data.aws_iam_policy_document.autoscaling.json
 }
 

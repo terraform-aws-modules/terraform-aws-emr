@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.2.0...v2.3.0) (2024-09-21)
+
+
+### Features
+
+* Allow passing in custom instance profile role ([#30](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/30)) ([0712293](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/0712293bce835f099d5bc43e45320bc23eb5eacd))
+
 ## [2.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.1.0...v2.2.0) (2024-08-03)
 
 

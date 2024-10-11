@@ -16,7 +16,7 @@ $ terraform plan
 $ terraform apply
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -111,6 +111,6 @@ No inputs.
 | <a name="output_sso_user_iam_role_unique_id"></a> [sso\_user\_iam\_role\_unique\_id](#output\_sso\_user\_iam\_role\_unique\_id) | Stable and unique string identifying the user IAM role |
 | <a name="output_sso_workspace_security_group_arn"></a> [sso\_workspace\_security\_group\_arn](#output\_sso\_workspace\_security\_group\_arn) | Amazon Resource Name (ARN) of the workspace security group |
 | <a name="output_sso_workspace_security_group_id"></a> [sso\_workspace\_security\_group\_id](#output\_sso\_workspace\_security\_group\_id) | ID of the workspace security group |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 Apache-2.0 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-emr/blob/master/LICENSE).

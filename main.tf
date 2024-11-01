@@ -398,7 +398,7 @@ resource "aws_emr_instance_fleet" "this" {
 
   lifecycle {
     ignore_changes = [
-      target_spot_capacity,
+      target_spot_capacity,target_on_demand_capacity
     ]
   }
 }

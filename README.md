@@ -330,13 +330,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.59 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.59 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
 
 ## Modules
 
@@ -401,7 +401,7 @@ No modules.
 | <a name="input_ec2_attributes"></a> [ec2\_attributes](#input\_ec2\_attributes) | Attributes for the EC2 instances running the job flow | `any` | `{}` | no |
 | <a name="input_iam_instance_profile_description"></a> [iam\_instance\_profile\_description](#input\_iam\_instance\_profile\_description) | Description of the EC2 IAM role/instance profile | `string` | `null` | no |
 | <a name="input_iam_instance_profile_name"></a> [iam\_instance\_profile\_name](#input\_iam\_instance\_profile\_name) | Name to use on EC2 IAM role/instance profile created | `string` | `null` | no |
-| <a name="input_iam_instance_profile_policies"></a> [iam\_instance\_profile\_policies](#input\_iam\_instance\_profile\_policies) | Map of IAM policies to attach to the EC2 IAM role/instance profile | `map(string)` | <pre>{<br>  "AmazonElasticMapReduceforEC2Role": "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"<br>}</pre> | no |
+| <a name="input_iam_instance_profile_policies"></a> [iam\_instance\_profile\_policies](#input\_iam\_instance\_profile\_policies) | Map of IAM policies to attach to the EC2 IAM role/instance profile | `map(string)` | <pre>{<br/>  "AmazonElasticMapReduceforEC2Role": "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"<br/>}</pre> | no |
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | IAM role path | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |
@@ -419,11 +419,11 @@ No modules.
 | <a name="input_master_instance_fleet"></a> [master\_instance\_fleet](#input\_master\_instance\_fleet) | Configuration block to use an [Instance Fleet](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html) for the master node type. Cannot be specified if any `master_instance_group` configuration blocks are set | `any` | `{}` | no |
 | <a name="input_master_instance_group"></a> [master\_instance\_group](#input\_master\_instance\_group) | Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [master node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master) | `any` | `{}` | no |
 | <a name="input_master_security_group_description"></a> [master\_security\_group\_description](#input\_master\_security\_group\_description) | Description of the security group created | `string` | `"Managed master security group"` | no |
-| <a name="input_master_security_group_rules"></a> [master\_security\_group\_rules](#input\_master\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br>  "default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Allow all egress traffic",<br>    "from_port": 0,<br>    "ipv6_cidr_blocks": [<br>      "::/0"<br>    ],<br>    "protocol": "-1",<br>    "to_port": 0,<br>    "type": "egress"<br>  }<br>}</pre> | no |
+| <a name="input_master_security_group_rules"></a> [master\_security\_group\_rules](#input\_master\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br/>  "default": {<br/>    "cidr_blocks": [<br/>      "0.0.0.0/0"<br/>    ],<br/>    "description": "Allow all egress traffic",<br/>    "from_port": 0,<br/>    "ipv6_cidr_blocks": [<br/>      "::/0"<br/>    ],<br/>    "protocol": "-1",<br/>    "to_port": 0,<br/>    "type": "egress"<br/>  }<br/>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the job flow | `string` | `""` | no |
 | <a name="input_placement_group_config"></a> [placement\_group\_config](#input\_placement\_group\_config) | The specified placement group configuration | `any` | `{}` | no |
 | <a name="input_release_label"></a> [release\_label](#input\_release\_label) | Release label for the Amazon EMR release | `string` | `null` | no |
-| <a name="input_release_label_filters"></a> [release\_label\_filters](#input\_release\_label\_filters) | Map of release label filters use to lookup a release label | `any` | <pre>{<br>  "default": {<br>    "prefix": "emr-6"<br>  }<br>}</pre> | no |
+| <a name="input_release_label_filters"></a> [release\_label\_filters](#input\_release\_label\_filters) | Map of release label filters use to lookup a release label | `any` | <pre>{<br/>  "default": {<br/>    "prefix": "emr-6"<br/>  }<br/>}</pre> | no |
 | <a name="input_scale_down_behavior"></a> [scale\_down\_behavior](#input\_scale\_down\_behavior) | Way that individual Amazon EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized | `string` | `"TERMINATE_AT_TASK_COMPLETION"` | no |
 | <a name="input_security_configuration"></a> [security\_configuration](#input\_security\_configuration) | Security configuration to create, or attach if `create_security_configuration` is `false`. Only valid for EMR clusters with `release_label` 4.8.0 or greater | `string` | `null` | no |
 | <a name="input_security_configuration_name"></a> [security\_configuration\_name](#input\_security\_configuration\_name) | Name of the security configuration to create, or attach if `create_security_configuration` is `false`. Only valid for EMR clusters with `release_label` 4.8.0 or greater | `string` | `null` | no |
@@ -431,13 +431,13 @@ No modules.
 | <a name="input_service_iam_role_arn"></a> [service\_iam\_role\_arn](#input\_service\_iam\_role\_arn) | The ARN of an existing IAM role to use for the service | `string` | `null` | no |
 | <a name="input_service_iam_role_description"></a> [service\_iam\_role\_description](#input\_service\_iam\_role\_description) | Description of the role | `string` | `null` | no |
 | <a name="input_service_iam_role_name"></a> [service\_iam\_role\_name](#input\_service\_iam\_role\_name) | Name to use on IAM role created | `string` | `null` | no |
-| <a name="input_service_iam_role_policies"></a> [service\_iam\_role\_policies](#input\_service\_iam\_role\_policies) | Map of IAM policies to attach to the service role | `map(string)` | <pre>{<br>  "AmazonEMRServicePolicy_v2": "arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"<br>}</pre> | no |
+| <a name="input_service_iam_role_policies"></a> [service\_iam\_role\_policies](#input\_service\_iam\_role\_policies) | Map of IAM policies to attach to the service role | `map(string)` | <pre>{<br/>  "AmazonEMRServicePolicy_v2": "arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"<br/>}</pre> | no |
 | <a name="input_service_pass_role_policy_description"></a> [service\_pass\_role\_policy\_description](#input\_service\_pass\_role\_policy\_description) | Description of the policy | `string` | `null` | no |
 | <a name="input_service_pass_role_policy_name"></a> [service\_pass\_role\_policy\_name](#input\_service\_pass\_role\_policy\_name) | Name to use on IAM policy created | `string` | `null` | no |
 | <a name="input_service_security_group_description"></a> [service\_security\_group\_description](#input\_service\_security\_group\_description) | Description of the security group created | `string` | `"Managed service access security group"` | no |
 | <a name="input_service_security_group_rules"></a> [service\_security\_group\_rules](#input\_service\_security\_group\_rules) | Security group rules to add to the security group created | `any` | `{}` | no |
 | <a name="input_slave_security_group_description"></a> [slave\_security\_group\_description](#input\_slave\_security\_group\_description) | Description of the security group created | `string` | `"Managed slave security group"` | no |
-| <a name="input_slave_security_group_rules"></a> [slave\_security\_group\_rules](#input\_slave\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br>  "default": {<br>    "cidr_blocks": [<br>      "0.0.0.0/0"<br>    ],<br>    "description": "Allow all egress traffic",<br>    "from_port": 0,<br>    "ipv6_cidr_blocks": [<br>      "::/0"<br>    ],<br>    "protocol": "-1",<br>    "to_port": 0,<br>    "type": "egress"<br>  }<br>}</pre> | no |
+| <a name="input_slave_security_group_rules"></a> [slave\_security\_group\_rules](#input\_slave\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br/>  "default": {<br/>    "cidr_blocks": [<br/>      "0.0.0.0/0"<br/>    ],<br/>    "description": "Allow all egress traffic",<br/>    "from_port": 0,<br/>    "ipv6_cidr_blocks": [<br/>      "::/0"<br/>    ],<br/>    "protocol": "-1",<br/>    "to_port": 0,<br/>    "type": "egress"<br/>  }<br/>}</pre> | no |
 | <a name="input_step"></a> [step](#input\_step) | Steps to run when creating the cluster | `any` | `{}` | no |
 | <a name="input_step_concurrency_level"></a> [step\_concurrency\_level](#input\_step\_concurrency\_level) | Number of steps that can be executed concurrently. You can specify a maximum of 256 steps. Only valid for EMR clusters with `release_label` 5.28.0 or greater (default is 1) | `number` | `null` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |

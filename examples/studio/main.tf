@@ -4,6 +4,10 @@ provider "aws" {
 
 data "aws_availability_zones" "available" {}
 
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {}
+
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
   region = "eu-west-1"
@@ -139,6 +143,22 @@ module "emr_studio_iam" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
+  encryption_key_arn = module.kms.key_arn
+
+  service_role_statements = [
+    {
+      effect = "Allow"
+      actions = [
+        "kms:Decrypt",
+        "kms:GenerateDataKey",
+        "kms:ReEncryptFrom",
+        "kms:ReEncryptTo",
+        "kms:DescribeKey"
+      ]
+      resources = [module.kms.key_arn]
+    }
+  ]
+
   tags = local.tags
 }
 
@@ -195,6 +215,60 @@ module "s3_bucket" {
       }
     }
   }
+
+  tags = local.tags
+}
+
+module "kms" {
+  source  = "terraform-aws-modules/kms/aws"
+  version = "~> 2.0"
+
+  deletion_window_in_days = 7
+  description             = "KMS key for ${local.name}."
+  enable_key_rotation     = true
+  is_enabled              = true
+  key_usage               = "ENCRYPT_DECRYPT"
+  enable_default_policy   = true
+  key_statements = [
+    {
+      sid = "EMRStudio"
+      actions = [
+        "kms:Decrypt",
+        "kms:GenerateDataKey",
+        "kms:ReEncryptFrom",
+        "kms:ReEncryptTo",
+        "kms:DescribeKey"
+      ]
+      resources = ["*"]
+
+      principals = [
+        {
+          type        = "AWS"
+          identifiers = [module.emr_studio_iam.service_iam_role_arn]
+        }
+      ]
+
+      conditions = [
+        {
+          test     = "StringEquals"
+          variable = "kms:CallerAccount"
+          values   = [data.aws_caller_identity.current.account_id]
+        },
+        {
+          test     = "StringEquals"
+          variable = "kms:EncryptionContext:aws:s3:arn"
+          values   = [module.s3_bucket.s3_bucket_arn]
+        },
+        {
+          test     = "StringEquals"
+          variable = "kms:ViaService"
+          values   = ["s3.${data.aws_region.current.name}.amazonaws.com"]
+        }
+      ]
+    }
+  ]
+
+  aliases = [local.name]
 
   tags = local.tags
 }

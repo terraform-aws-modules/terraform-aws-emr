@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.3.0...v2.4.0) (2025-01-15)
+
+
+### Features
+
+* Support studio `encryption_key_arn` ([#35](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/35)) ([8122444](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/81224444712633533d40dc951e888357a46ffe57))
+
+
+### Bug Fixes
+
+* Update CI workflow versions to latest ([#31](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/31)) ([ad34d3d](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/ad34d3d55581d51dff978d936d8ebc261f39e646))
+
 ## [2.3.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.2.0...v2.3.0) (2024-09-21)
 
 

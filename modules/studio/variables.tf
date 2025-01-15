@@ -32,6 +32,12 @@ variable "description" {
   default     = null
 }
 
+variable "encryption_key_arn" {
+  description = "The AWS KMS key identifier (ARN) used to encrypt Amazon EMR Studio workspace and notebook files when backed up to Amazon S3"
+  type        = string
+  default     = null
+}
+
 variable "idp_auth_url" {
   description = "The authentication endpoint of your identity provider (IdP). Specify this value when you use IAM authentication and want to let federated users log in to a Studio with the Studio URL and credentials from your IdP"
   type        = string

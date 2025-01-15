@@ -22,6 +22,7 @@ resource "aws_emr_studio" "this" {
   auth_mode                      = var.auth_mode
   default_s3_location            = var.default_s3_location
   description                    = var.description
+  encryption_key_arn             = var.encryption_key_arn
   engine_security_group_id       = local.create_security_groups ? aws_security_group.engine[0].id : var.engine_security_group_id
   idp_auth_url                   = var.idp_auth_url
   idp_relay_state_parameter_name = var.idp_relay_state_parameter_name

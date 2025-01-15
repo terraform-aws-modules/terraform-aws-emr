@@ -22,13 +22,13 @@ $ terraform apply
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.65 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.65 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
 
 ## Modules
 
@@ -38,6 +38,7 @@ $ terraform apply
 | <a name="module_emr_studio_disabled"></a> [emr\_studio\_disabled](#module\_emr\_studio\_disabled) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_iam"></a> [emr\_studio\_iam](#module\_emr\_studio\_iam) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_sso"></a> [emr\_studio\_sso](#module\_emr\_studio\_sso) | ../../modules/studio | n/a |
+| <a name="module_kms"></a> [kms](#module\_kms) | terraform-aws-modules/kms/aws | ~> 2.0 |
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> 4.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 5.0 |
 
@@ -46,7 +47,9 @@ $ terraform apply
 | Name | Type |
 |------|------|
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_identitystore_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/identitystore_group) | data source |
+| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 | [aws_ssoadmin_instances.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ssoadmin_instances) | data source |
 
 ## Inputs

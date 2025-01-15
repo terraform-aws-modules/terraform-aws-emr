@@ -68,13 +68,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.65 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.65 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
 
 ## Modules
 
@@ -119,6 +119,7 @@ No modules.
 | <a name="input_create_user_role_policy"></a> [create\_user\_role\_policy](#input\_create\_user\_role\_policy) | Determines whether the user IAM role policy should be created | `bool` | `true` | no |
 | <a name="input_default_s3_location"></a> [default\_s3\_location](#input\_default\_s3\_location) | The Amazon S3 location to back up Amazon EMR Studio Workspaces and notebook files | `string` | `""` | no |
 | <a name="input_description"></a> [description](#input\_description) | A detailed description of the Amazon EMR Studio | `string` | `null` | no |
+| <a name="input_encryption_key_arn"></a> [encryption\_key\_arn](#input\_encryption\_key\_arn) | The AWS KMS key identifier (ARN) used to encrypt Amazon EMR Studio workspace and notebook files when backed up to Amazon S3 | `string` | `null` | no |
 | <a name="input_engine_security_group_description"></a> [engine\_security\_group\_description](#input\_engine\_security\_group\_description) | Description of the security group created | `string` | `"EMR Studio engine security group"` | no |
 | <a name="input_engine_security_group_id"></a> [engine\_security\_group\_id](#input\_engine\_security\_group\_id) | The ID of the Amazon EMR Studio Engine security group. The Engine security group allows inbound network traffic from the Workspace security group, and it must be in the same VPC specified by `vpc_id` | `string` | `null` | no |
 | <a name="input_engine_security_group_rules"></a> [engine\_security\_group\_rules](#input\_engine\_security\_group\_rules) | Security group rules to add to the security group created | `any` | `{}` | no |

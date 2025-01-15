@@ -324,7 +324,7 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 - [Studios](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/studio) with either IAM or SSO authentication
 - [Virtual cluster](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/virtual-cluster) running on Amazon EKS
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -402,6 +402,7 @@ No modules.
 | <a name="input_iam_instance_profile_description"></a> [iam\_instance\_profile\_description](#input\_iam\_instance\_profile\_description) | Description of the EC2 IAM role/instance profile | `string` | `null` | no |
 | <a name="input_iam_instance_profile_name"></a> [iam\_instance\_profile\_name](#input\_iam\_instance\_profile\_name) | Name to use on EC2 IAM role/instance profile created | `string` | `null` | no |
 | <a name="input_iam_instance_profile_policies"></a> [iam\_instance\_profile\_policies](#input\_iam\_instance\_profile\_policies) | Map of IAM policies to attach to the EC2 IAM role/instance profile | `map(string)` | <pre>{<br/>  "AmazonElasticMapReduceforEC2Role": "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role"<br/>}</pre> | no |
+| <a name="input_iam_instance_profile_role_arn"></a> [iam\_instance\_profile\_role\_arn](#input\_iam\_instance\_profile\_role\_arn) | The ARN of an existing IAM role to use if passing in a custom instance profile and creating a service role | `string` | `null` | no |
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | IAM role path | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |
@@ -477,7 +478,7 @@ No modules.
 | <a name="output_service_iam_role_arn"></a> [service\_iam\_role\_arn](#output\_service\_iam\_role\_arn) | Service IAM role ARN |
 | <a name="output_service_iam_role_name"></a> [service\_iam\_role\_name](#output\_service\_iam\_role\_name) | Service IAM role name |
 | <a name="output_service_iam_role_unique_id"></a> [service\_iam\_role\_unique\_id](#output\_service\_iam\_role\_unique\_id) | Stable and unique string identifying the service IAM role |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## License
 

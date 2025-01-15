@@ -39,7 +39,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 --region us-west-2 --id {}
 ```
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -96,6 +96,6 @@ No inputs.
 | <a name="output_complete_job_execution_role_unique_id"></a> [complete\_job\_execution\_role\_unique\_id](#output\_complete\_job\_execution\_role\_unique\_id) | Stable and unique string identifying the job execution IAM role |
 | <a name="output_complete_virtual_cluster_arn"></a> [complete\_virtual\_cluster\_arn](#output\_complete\_virtual\_cluster\_arn) | ARN of the EMR virtual cluster |
 | <a name="output_complete_virtual_cluster_id"></a> [complete\_virtual\_cluster\_id](#output\_complete\_virtual\_cluster\_id) | ID of the EMR virtual cluster |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 Apache-2.0 Licensed. See [LICENSE](https://github.com/terraform-aws-modules/terraform-aws-emr/blob/master/LICENSE).

@@ -76,7 +76,7 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 - [Studios](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/studio) with either IAM or SSO authentication
 - [Virtual cluster](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/virtual-cluster) running on Amazon EKS
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -155,7 +155,7 @@ No modules.
 | <a name="output_job_execution_role_unique_id"></a> [job\_execution\_role\_unique\_id](#output\_job\_execution\_role\_unique\_id) | Stable and unique string identifying the job execution IAM role |
 | <a name="output_virtual_cluster_arn"></a> [virtual\_cluster\_arn](#output\_virtual\_cluster\_arn) | ARN of the EMR virtual cluster |
 | <a name="output_virtual_cluster_id"></a> [virtual\_cluster\_id](#output\_virtual\_cluster\_id) | ID of the EMR virtual cluster |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## License
 

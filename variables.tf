@@ -377,6 +377,12 @@ variable "iam_instance_profile_policies" {
   default     = { AmazonElasticMapReduceforEC2Role = "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role" }
 }
 
+variable "iam_instance_profile_role_arn" {
+  description = "The ARN of an existing IAM role to use if passing in a custom instance profile and creating a service role"
+  type        = string
+  default     = null
+}
+
 ################################################################################
 # Managed Security Group
 ################################################################################

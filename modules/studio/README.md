@@ -62,7 +62,7 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 - [Studios](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/studio) with either IAM or SSO authentication
 - [Virtual cluster](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples/virtual-cluster) running on Amazon EKS
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -180,7 +180,7 @@ No modules.
 | <a name="output_user_iam_role_unique_id"></a> [user\_iam\_role\_unique\_id](#output\_user\_iam\_role\_unique\_id) | Stable and unique string identifying the user IAM role |
 | <a name="output_workspace_security_group_arn"></a> [workspace\_security\_group\_arn](#output\_workspace\_security\_group\_arn) | Amazon Resource Name (ARN) of the workspace security group |
 | <a name="output_workspace_security_group_id"></a> [workspace\_security\_group\_id](#output\_workspace\_security\_group\_id) | ID of the workspace security group |
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+<!-- END_TF_DOCS -->
 
 ## License
 

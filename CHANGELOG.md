@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.0...v2.4.1) (2025-03-30)
+
+
+### Bug Fixes
+
+* Add dependency on service security group rules ([#37](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/37)) ([150d89c](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/150d89c2b471376190e59adac10b99b0cdfa212d))
+
 ## [2.4.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.3.0...v2.4.0) (2025-01-15)
 
 

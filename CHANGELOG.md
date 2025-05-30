@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.2](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.1...v2.4.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* Align EMR EKS Job Execution role with AWS docs ([#38](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/38)) ([0c7fec0](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/0c7fec0f78534e20c64fb14120d49af8efc335bb))
+
 ## [2.4.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.0...v2.4.1) (2025-03-30)
 
 

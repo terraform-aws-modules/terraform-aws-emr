@@ -1,5 +1,4 @@
 data "aws_caller_identity" "current" {}
-data "aws_partition" "current" {}
 
 locals {
   account_id = data.aws_caller_identity.current.account_id
@@ -145,17 +144,6 @@ locals {
 
 data "aws_iam_policy_document" "assume" {
   count = local.create_iam_role ? 1 : 0
-
-  statement {
-    sid     = "EMR"
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["elasticmapreduce.${data.aws_partition.current.dns_suffix}"]
-    }
-  }
 
   statement {
     sid     = "IRSA"

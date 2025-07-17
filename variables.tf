@@ -128,6 +128,12 @@ variable "name" {
   default     = ""
 }
 
+variable "os_release_label" {
+  description = "OS release label for the Amazon EMR release"
+  type        = string
+  default     = "2023.7.20250512.0"
+}
+
 variable "placement_group_config" {
   description = "The specified placement group configuration"
   type        = any

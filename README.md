@@ -330,13 +330,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.2 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.2 |
 
 ## Modules
 
@@ -422,6 +422,7 @@ No modules.
 | <a name="input_master_security_group_description"></a> [master\_security\_group\_description](#input\_master\_security\_group\_description) | Description of the security group created | `string` | `"Managed master security group"` | no |
 | <a name="input_master_security_group_rules"></a> [master\_security\_group\_rules](#input\_master\_security\_group\_rules) | Security group rules to add to the security group created | `any` | <pre>{<br/>  "default": {<br/>    "cidr_blocks": [<br/>      "0.0.0.0/0"<br/>    ],<br/>    "description": "Allow all egress traffic",<br/>    "from_port": 0,<br/>    "ipv6_cidr_blocks": [<br/>      "::/0"<br/>    ],<br/>    "protocol": "-1",<br/>    "to_port": 0,<br/>    "type": "egress"<br/>  }<br/>}</pre> | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the job flow | `string` | `""` | no |
+| <a name="input_os_release_label"></a> [os\_release\_label](#input\_os\_release\_label) | OS release label for the Amazon EMR release | `string` | `"2023.7.20250512.0"` | no |
 | <a name="input_placement_group_config"></a> [placement\_group\_config](#input\_placement\_group\_config) | The specified placement group configuration | `any` | `{}` | no |
 | <a name="input_release_label"></a> [release\_label](#input\_release\_label) | Release label for the Amazon EMR release | `string` | `null` | no |
 | <a name="input_release_label_filters"></a> [release\_label\_filters](#input\_release\_label\_filters) | Map of release label filters use to lookup a release label | `any` | <pre>{<br/>  "default": {<br/>    "prefix": "emr-6"<br/>  }<br/>}</pre> | no |

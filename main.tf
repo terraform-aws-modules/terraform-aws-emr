@@ -527,7 +527,7 @@ data "aws_iam_policy_document" "autoscaling" {
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"]
     }
   }
 }
@@ -591,7 +591,7 @@ data "aws_iam_policy_document" "service" {
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:*"]
     }
   }
 }

@@ -1,6 +1,12 @@
-data "aws_region" "current" {}
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "current" {
+  count = var.create ? 1 : 0
+}
+data "aws_partition" "current" {
+  count = var.create ? 1 : 0
+}
+data "aws_caller_identity" "current" {
+  count = var.create ? 1 : 0
+}
 
 data "aws_emr_release_labels" "this" {
   count = var.create && length(var.release_label_filters) > 0 ? 1 : 0
@@ -17,6 +23,11 @@ data "aws_emr_release_labels" "this" {
 
 locals {
   tags = merge(var.tags, { terraform-aws-modules = "emr" })
+
+  region     = try(data.aws_region.current[0].region, "")
+  dns_suffix = try(data.aws_partition.current[0].dns_suffix, "")
+  partition  = try(data.aws_partition.current[0].partition, "")
+  account_id = try(data.aws_caller_identity.current[0].account_id, "")
 }
 
 ################################################################################
@@ -512,21 +523,21 @@ data "aws_iam_policy_document" "autoscaling" {
     principals {
       type = "Service"
       identifiers = [
-        "elasticmapreduce.${data.aws_partition.current.dns_suffix}",
-        "application-autoscaling.${data.aws_partition.current.dns_suffix}"
+        "elasticmapreduce.${local.dns_suffix}",
+        "application-autoscaling.${local.dns_suffix}"
       ]
     }
 
     condition {
       test     = "StringEquals"
       variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.current.account_id]
+      values   = [local.account_id]
     }
 
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+      values   = ["arn:aws:elasticmapreduce:${local.region}:${local.account_id}:*"]
     }
   }
 }
@@ -535,7 +546,7 @@ resource "aws_iam_role_policy_attachment" "autoscaling" {
   count = local.create_autoscaling_iam_role ? 1 : 0
 
   role       = aws_iam_role.autoscaling[0].name
-  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole"
+  policy_arn = "arn:${local.partition}:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole"
 }
 
 ################################################################################
@@ -577,20 +588,20 @@ data "aws_iam_policy_document" "service" {
     principals {
       type = "Service"
       identifiers = [
-        "elasticmapreduce.${data.aws_partition.current.dns_suffix}",
+        "elasticmapreduce.${local.dns_suffix}",
       ]
     }
 
     condition {
       test     = "StringEquals"
       variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.current.account_id]
+      values   = [local.account_id]
     }
 
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+      values   = ["arn:aws:elasticmapreduce:${local.region}:${local.account_id}:*"]
     }
   }
 }
@@ -625,8 +636,8 @@ data "aws_iam_policy_document" "service_pass_role" {
       test     = "StringEquals"
       variable = "iam:PassedToService"
       values = [
-        "application-autoscaling.${data.aws_partition.current.dns_suffix}",
-        "ec2.${data.aws_partition.current.dns_suffix}",
+        "application-autoscaling.${local.dns_suffix}",
+        "ec2.${local.dns_suffix}",
       ]
     }
   }
@@ -668,7 +679,7 @@ data "aws_iam_policy_document" "instance_profile" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${data.aws_partition.current.dns_suffix}"]
+      identifiers = ["ec2.${local.dns_suffix}"]
     }
   }
 }

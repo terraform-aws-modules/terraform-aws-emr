@@ -113,7 +113,7 @@ resource "null_resource" "start_job_run" {
       --virtual-cluster-id ${module.complete.virtual_cluster_id} \
       --name ${local.name}-example \
       --execution-role-arn ${module.complete.job_execution_role_arn} \
-      --release-label emr-6.8.0-latest \
+      --release-label emr-7.9.0-latest \
       --job-driver '{
           "sparkSubmitJobDriver": {
               "entryPoint": "s3://${module.s3_bucket.s3_bucket_id}/emr-eks-workshop/scripts/pi.py",

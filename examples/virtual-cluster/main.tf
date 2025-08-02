@@ -14,7 +14,13 @@ provider "kubernetes" {
   }
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 
 locals {
   name   = "virtual-emr"
@@ -198,8 +204,7 @@ module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "~> 6.0"
 
-  vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.vpc_endpoints_sg.security_group_id]
+  vpc_id = module.vpc.vpc_id
 
   endpoints = merge({
     s3 = {
@@ -221,24 +226,14 @@ module "vpc_endpoints" {
       }
   })
 
-  tags = local.tags
-}
-
-module "vpc_endpoints_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
-
-  name        = "${local.name}-vpc-endpoints"
-  description = "Security group for VPC endpoint access"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      rule        = "https-443-tcp"
-      description = "VPC CIDR HTTPS"
+  # Security group
+  create_security_group = true
+  security_group_rules = {
+    ingress_https = {
+      description = "HTTPS from private subnets"
       cidr_blocks = join(",", module.vpc.private_subnets_cidr_blocks)
-    },
-  ]
+    }
+  }
 
   tags = local.tags
 }

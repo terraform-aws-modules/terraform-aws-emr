@@ -77,7 +77,7 @@ variable "release_label" {
 variable "release_label_prefix" {
   description = "Release label prefix used to lookup a release label"
   type        = string
-  default     = "emr-6"
+  default     = "emr-7"
 }
 
 variable "type" {

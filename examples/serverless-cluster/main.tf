@@ -2,7 +2,13 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
@@ -27,7 +33,7 @@ module "emr_serverless_spark" {
 
   name = "${local.name}-spark"
 
-  release_label_prefix = "emr-6"
+  release_label_prefix = "emr-7"
 
   initial_capacity = {
     driver = {
@@ -87,7 +93,7 @@ module "emr_serverless_hive" {
 
   name = "${local.name}-hive"
 
-  release_label_prefix = "emr-6"
+  release_label_prefix = "emr-7"
   type                 = "hive"
 
   initial_capacity = {

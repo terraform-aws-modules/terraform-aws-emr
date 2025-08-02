@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -28,14 +34,20 @@ variable "applications" {
 
 variable "auto_termination_policy" {
   description = "An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of idle time in seconds after which a cluster automatically terminates"
-  type        = any
-  default     = {}
+  type = object({
+    idle_timeout = optional(number)
+  })
+  default = null
 }
 
 variable "bootstrap_action" {
   description = "Ordered list of bootstrap actions that will be run before Hadoop is started on the cluster nodes"
-  type        = any
-  default     = {}
+  type = list(object({
+    args = optional(list(string))
+    name = string
+    path = string
+  }))
+  default = null
 }
 
 variable "configurations" {
@@ -52,14 +64,58 @@ variable "configurations_json" {
 
 variable "core_instance_fleet" {
   description = "Configuration block to use an [Instance Fleet](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html) for the core node type. Cannot be specified if any `core_instance_group` configuration blocks are set"
-  type        = any
-  default     = {}
+  type = object({
+    instance_type_configs = optional(list(object({
+      bid_price                                  = optional(string)
+      bid_price_as_percentage_of_on_demand_price = optional(number, 60)
+      configurations = optional(list(object({
+        classification = optional(string)
+        properties     = optional(map(string))
+      })))
+      ebs_config = optional(list(object({
+        iops                 = optional(number)
+        size                 = optional(number, 256)
+        type                 = optional(string, "gp3")
+        volumes_per_instance = optional(number)
+      })))
+      instance_type     = string
+      weighted_capacity = optional(number)
+    })))
+    launch_specifications = optional(object({
+      on_demand_specifications = optional(object({
+        allocation_strategy = optional(string, "lowest-price")
+      }))
+      spot_specification = optional(object({
+        allocation_strategy      = optional(string, "capacity-optimized")
+        block_duration_minutes   = optional(number)
+        timeout_action           = optional(string, "SWITCH_TO_ON_DEMAND")
+        timeout_duration_minutes = optional(number, 60)
+      }))
+    }))
+    name                      = optional(string)
+    target_on_demand_capacity = optional(number)
+    target_spot_capacity      = optional(number)
+  })
+  default = null
 }
 
 variable "core_instance_group" {
   description = "Configuration block to use an [Instance Group] for the core node type"
-  type        = any
-  default     = {}
+  type = object({
+    autoscaling_policy = optional(string)
+    bid_price          = optional(string)
+    ebs_config = optional(list(object({
+      iops                 = optional(number)
+      size                 = optional(number, 256)
+      throughput           = optional(number)
+      type                 = optional(string, "gp3")
+      volumes_per_instance = optional(number)
+    })))
+    instance_count = optional(number)
+    instance_type  = string
+    name           = optional(string)
+  })
+  default = null
 }
 
 variable "custom_ami_id" {
@@ -76,8 +132,18 @@ variable "ebs_root_volume_size" {
 
 variable "ec2_attributes" {
   description = "Attributes for the EC2 instances running the job flow"
-  type        = any
-  default     = {}
+  type = object({
+    additional_master_security_groups = optional(string)
+    additional_slave_security_groups  = optional(string)
+    emr_managed_master_security_group = optional(string)
+    emr_managed_slave_security_group  = optional(string)
+    instance_profile                  = optional(string)
+    key_name                          = optional(string)
+    service_access_security_group     = optional(string)
+    subnet_id                         = optional(string)
+    subnet_ids                        = optional(list(string))
+  })
+  default = {}
 }
 
 variable "keep_job_flow_alive_when_no_steps" {
@@ -88,8 +154,14 @@ variable "keep_job_flow_alive_when_no_steps" {
 
 variable "kerberos_attributes" {
   description = "Kerberos configuration for the cluster"
-  type        = any
-  default     = {}
+  type = object({
+    ad_domain_join_password              = optional(string)
+    ad_domain_join_user                  = optional(string)
+    cross_realm_trust_principal_password = optional(string)
+    kdc_admin_password                   = string
+    realm                                = string
+  })
+  default = null
 }
 
 variable "list_steps_states" {
@@ -112,14 +184,57 @@ variable "log_uri" {
 
 variable "master_instance_fleet" {
   description = "Configuration block to use an [Instance Fleet](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html) for the master node type. Cannot be specified if any `master_instance_group` configuration blocks are set"
-  type        = any
-  default     = {}
+  type = object({
+    instance_type_configs = optional(list(object({
+      bid_price                                  = optional(string)
+      bid_price_as_percentage_of_on_demand_price = optional(number, 60)
+      configurations = optional(list(object({
+        classification = optional(string)
+        properties     = optional(map(string))
+      })))
+      ebs_config = optional(list(object({
+        iops                 = optional(number)
+        size                 = optional(number, 256)
+        type                 = optional(string, "gp3")
+        volumes_per_instance = optional(number)
+      })))
+      instance_type     = string
+      weighted_capacity = optional(number)
+    })))
+    launch_specifications = optional(object({
+      on_demand_specifications = optional(object({
+        allocation_strategy = optional(string, "lowest-price")
+      }))
+      spot_specification = optional(object({
+        allocation_strategy      = optional(string, "capacity-optimized")
+        block_duration_minutes   = optional(number)
+        timeout_action           = optional(string, "SWITCH_TO_ON_DEMAND")
+        timeout_duration_minutes = optional(number, 60)
+      }))
+    }))
+    name                      = optional(string)
+    target_on_demand_capacity = optional(number)
+    target_spot_capacity      = optional(number)
+  })
+  default = null
 }
 
 variable "master_instance_group" {
   description = "Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [master node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master)"
-  type        = any
-  default     = {}
+  type = object({
+    bid_price = optional(string)
+    ebs_config = optional(list(object({
+      iops                 = optional(number)
+      size                 = optional(number, 256)
+      throughput           = optional(number)
+      type                 = optional(string, "gp3")
+      volumes_per_instance = optional(number)
+    })))
+    instance_count = optional(number)
+    instance_type  = string
+    name           = optional(string)
+  })
+  default = null
 }
 
 variable "name" {
@@ -128,10 +243,19 @@ variable "name" {
   default     = ""
 }
 
+variable "os_release_label" {
+  description = "Amazon Linux release for all nodes in a cluster launch RunJobFlow request. If not specified, Amazon EMR uses the latest validated Amazon Linux release for cluster launch"
+  type        = string
+  default     = null
+}
+
 variable "placement_group_config" {
   description = "The specified placement group configuration"
-  type        = any
-  default     = {}
+  type = list(object({
+    instance_role      = string
+    placement_strategy = optional(string)
+  }))
+  default = null
 }
 
 variable "release_label" {
@@ -142,11 +266,14 @@ variable "release_label" {
 
 variable "release_label_filters" {
   description = "Map of release label filters use to lookup a release label"
-  type        = any
+  type = map(object({
+    application = optional(string)
+    prefix      = optional(string)
+  }))
   default = {
     default = {
       # application = "spark@3"
-      prefix = "emr-6"
+      prefix = "emr-7"
     }
   }
 }
@@ -159,8 +286,17 @@ variable "scale_down_behavior" {
 
 variable "step" {
   description = "Steps to run when creating the cluster"
-  type        = any
-  default     = {}
+  type = list(object({
+    action_on_failure = string
+    hadoop_jar_step = optional(object({
+      args       = optional(list(string))
+      jar        = string
+      main_class = optional(string)
+      properties = optional(map(string))
+    }))
+    name = string
+  }))
+  default = null
 }
 
 variable "step_concurrency_level" {
@@ -194,8 +330,39 @@ variable "visible_to_all_users" {
 
 variable "task_instance_fleet" {
   description = "Configuration block to use an [Instance Fleet](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html) for the task node type. Cannot be specified if any `task_instance_group` configuration blocks are set"
-  type        = any
-  default     = {}
+  type = object({
+    instance_type_configs = optional(list(object({
+      bid_price                                  = optional(string)
+      bid_price_as_percentage_of_on_demand_price = optional(number, 60)
+      configurations = optional(list(object({
+        classification = optional(string)
+        properties     = optional(map(string))
+      })))
+      ebs_config = optional(list(object({
+        iops                 = optional(number)
+        size                 = optional(number, 256)
+        type                 = optional(string, "gp3")
+        volumes_per_instance = optional(number)
+      })))
+      instance_type     = string
+      weighted_capacity = optional(number)
+    })))
+    launch_specifications = optional(object({
+      on_demand_specifications = optional(object({
+        allocation_strategy = optional(string, "lowest-price")
+      }))
+      spot_specification = optional(object({
+        allocation_strategy      = optional(string, "capacity-optimized")
+        block_duration_minutes   = optional(number)
+        timeout_action           = optional(string, "SWITCH_TO_ON_DEMAND")
+        timeout_duration_minutes = optional(number, 60)
+      }))
+    }))
+    name                      = optional(string)
+    target_on_demand_capacity = optional(number)
+    target_spot_capacity      = optional(number)
+  })
+  default = null
 }
 
 ################################################################################
@@ -205,8 +372,22 @@ variable "task_instance_fleet" {
 
 variable "task_instance_group" {
   description = "Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [task node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master)"
-  type        = any
-  default     = {}
+  type = object({
+    autoscaling_policy = optional(string)
+    bid_price          = optional(string)
+    configuration_json = optional(string)
+    ebs_config = optional(list(object({
+      iops                 = optional(number)
+      size                 = optional(number, 256)
+      type                 = optional(string, "gp3")
+      volumes_per_instance = optional(number)
+    })))
+    ebs_optimized  = optional(bool, true)
+    instance_count = optional(number)
+    instance_type  = string
+    name           = optional(string)
+  })
+  default = null
 }
 
 ################################################################################
@@ -215,8 +396,14 @@ variable "task_instance_group" {
 
 variable "managed_scaling_policy" {
   description = "Compute limit configuration for a [Managed Scaling Policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html)"
-  type        = any
-  default     = {}
+  type = object({
+    maximum_capacity_units          = number
+    maximum_core_capacity_units     = optional(number)
+    maximum_ondemand_capacity_units = optional(number)
+    minimum_capacity_units          = number
+    unit_type                       = string
+  })
+  default = null
 }
 
 ################################################################################
@@ -429,7 +616,18 @@ variable "master_security_group_description" {
 
 variable "master_security_group_rules" {
   description = "Security group rules to add to the security group created"
-  type        = any
+  type = map(object({
+    description                 = optional(string)
+    cidr_blocks                 = optional(list(string))
+    ipv6_cidr_blocks            = optional(list(string))
+    prefix_list_ids             = optional(list(string))
+    self                        = optional(bool)
+    type                        = optional(string, "egress")
+    from_port                   = number
+    to_port                     = number
+    protocol                    = optional(string, "tcp")
+    source_slave_security_group = optional(bool, false)
+  }))
   default = {
     "default" = {
       description      = "Allow all egress traffic"
@@ -455,7 +653,18 @@ variable "slave_security_group_description" {
 
 variable "slave_security_group_rules" {
   description = "Security group rules to add to the security group created"
-  type        = any
+  type = map(object({
+    description                  = optional(string)
+    cidr_blocks                  = optional(list(string))
+    ipv6_cidr_blocks             = optional(list(string))
+    prefix_list_ids              = optional(list(string))
+    self                         = optional(bool)
+    type                         = optional(string, "egress")
+    from_port                    = number
+    to_port                      = number
+    protocol                     = optional(string, "tcp")
+    source_master_security_group = optional(bool, false)
+  }))
   default = {
     "default" = {
       description      = "Allow all egress traffic"
@@ -487,6 +696,17 @@ variable "service_security_group_description" {
 
 variable "service_security_group_rules" {
   description = "Security group rules to add to the security group created"
-  type        = any
-  default     = {}
+  type = map(object({
+    description                  = optional(string)
+    cidr_blocks                  = optional(list(string))
+    ipv6_cidr_blocks             = optional(list(string))
+    prefix_list_ids              = optional(list(string))
+    self                         = optional(bool)
+    type                         = optional(string, "egress")
+    from_port                    = number
+    to_port                      = number
+    protocol                     = optional(string, "tcp")
+    source_master_security_group = optional(bool, false)
+  }))
+  default = {}
 }

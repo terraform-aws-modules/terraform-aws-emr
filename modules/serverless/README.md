@@ -14,7 +14,7 @@ module "emr_serverless" {
 
   name = "example-spark"
 
-  release_label_prefix = "emr-6"
+  release_label_prefix = "emr-7"
 
   initial_capacity = {
     driver = {
@@ -76,7 +76,7 @@ module "emr_serverless" {
 
   name = "example-hive"
 
-  release_label_prefix = "emr-6"
+  release_label_prefix = "emr-7"
   type                 = "hive"
 
   initial_capacity = {
@@ -134,13 +134,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.2 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
 
 ## Modules
 
@@ -172,7 +172,7 @@ No modules.
 | <a name="input_name"></a> [name](#input\_name) | The name of the application | `string` | `""` | no |
 | <a name="input_network_configuration"></a> [network\_configuration](#input\_network\_configuration) | The network configuration for customer VPC connectivity | `any` | `{}` | no |
 | <a name="input_release_label"></a> [release\_label](#input\_release\_label) | Release label for the Amazon EMR release | `string` | `null` | no |
-| <a name="input_release_label_prefix"></a> [release\_label\_prefix](#input\_release\_label\_prefix) | Release label prefix used to lookup a release label | `string` | `"emr-6"` | no |
+| <a name="input_release_label_prefix"></a> [release\_label\_prefix](#input\_release\_label\_prefix) | Release label prefix used to lookup a release label | `string` | `"emr-7"` | no |
 | <a name="input_security_group_description"></a> [security\_group\_description](#input\_security\_group\_description) | Description of the security group created | `string` | `null` | no |
 | <a name="input_security_group_name"></a> [security\_group\_name](#input\_security\_group\_name) | Name to use on security group created | `string` | `null` | no |
 | <a name="input_security_group_rules"></a> [security\_group\_rules](#input\_security\_group\_rules) | Security group rules to add to the security group created | `any` | `{}` | no |

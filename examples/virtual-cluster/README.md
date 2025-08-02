@@ -41,8 +41,8 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.2 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.17 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.38 |
 | <a name="requirement_null"></a> [null](#requirement\_null) | >= 3.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.7 |
 
@@ -50,7 +50,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.2 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
 ## Modules
@@ -64,7 +64,6 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 | <a name="module_s3_bucket"></a> [s3\_bucket](#module\_s3\_bucket) | terraform-aws-modules/s3-bucket/aws | ~> 5.0 |
 | <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | ~> 6.0 |
 | <a name="module_vpc_endpoints"></a> [vpc\_endpoints](#module\_vpc\_endpoints) | terraform-aws-modules/vpc/aws//modules/vpc-endpoints | ~> 6.0 |
-| <a name="module_vpc_endpoints_sg"></a> [vpc\_endpoints\_sg](#module\_vpc\_endpoints\_sg) | terraform-aws-modules/security-group/aws | ~> 5.0 |
 
 ## Resources
 

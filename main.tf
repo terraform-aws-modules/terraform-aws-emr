@@ -1,5 +1,7 @@
 data "aws_region" "current" {
   count = var.create ? 1 : 0
+
+  region = var.region
 }
 data "aws_partition" "current" {
   count = var.create ? 1 : 0
@@ -9,14 +11,16 @@ data "aws_caller_identity" "current" {
 }
 
 data "aws_emr_release_labels" "this" {
-  count = var.create && length(var.release_label_filters) > 0 ? 1 : 0
+  count = var.create && var.release_label_filters != null ? 1 : 0
+
+  region = var.region
 
   dynamic "filters" {
     for_each = var.release_label_filters
 
     content {
-      application = try(filters.value.application, null)
-      prefix      = try(filters.value.prefix, null)
+      application = filters.value.application
+      prefix      = filters.value.prefix
     }
   }
 }
@@ -41,20 +45,20 @@ resource "aws_emr_cluster" "this" {
   applications    = var.applications
 
   dynamic "auto_termination_policy" {
-    for_each = length(var.auto_termination_policy) > 0 ? [var.auto_termination_policy] : []
+    for_each = var.auto_termination_policy != null ? [var.auto_termination_policy] : []
 
     content {
-      idle_timeout = try(auto_termination_policy.value.idle_timeout, null)
+      idle_timeout = auto_termination_policy.value.idle_timeout
     }
   }
 
   autoscaling_role = local.create_autoscaling_iam_role ? aws_iam_role.autoscaling[0].arn : var.autoscaling_iam_role_arn
 
   dynamic "bootstrap_action" {
-    for_each = var.bootstrap_action
+    for_each = var.bootstrap_action != null ? var.bootstrap_action : []
 
     content {
-      args = try(bootstrap_action.value.args, null)
+      args = bootstrap_action.value.args
       name = bootstrap_action.value.name
       path = bootstrap_action.value.path
     }
@@ -64,94 +68,94 @@ resource "aws_emr_cluster" "this" {
   configurations_json = var.configurations_json
 
   dynamic "core_instance_fleet" {
-    for_each = length(var.core_instance_fleet) > 0 ? [var.core_instance_fleet] : []
+    for_each = var.core_instance_fleet != null ? [var.core_instance_fleet] : []
 
     content {
       dynamic "instance_type_configs" {
-        for_each = try(core_instance_fleet.value.instance_type_configs, [])
+        for_each = core_instance_fleet.value.instance_type_configs != null ? core_instance_fleet.value.instance_type_configs : []
 
         content {
-          bid_price                                  = try(instance_type_configs.value.bid_price, null)
-          bid_price_as_percentage_of_on_demand_price = try(instance_type_configs.value.bid_price_as_percentage_of_on_demand_price, 60)
+          bid_price                                  = instance_type_configs.value.bid_price
+          bid_price_as_percentage_of_on_demand_price = instance_type_configs.value.bid_price_as_percentage_of_on_demand_price
 
           dynamic "configurations" {
-            for_each = try(instance_type_configs.value.configurations, [])
+            for_each = instance_type_configs.value.configurations != null ? instance_type_configs.value.configurations : []
 
             content {
-              classification = try(configurations.value.classification, null)
-              properties     = try(configurations.value.properties, null)
+              classification = configurations.value.classification
+              properties     = configurations.value.properties
             }
           }
 
           dynamic "ebs_config" {
-            for_each = try(instance_type_configs.value.ebs_config, [])
+            for_each = instance_type_configs.value.ebs_config != null ? instance_type_configs.value.ebs_config : []
 
             content {
-              iops                 = try(ebs_config.value.iops, null)
-              size                 = try(ebs_config.value.size, 64)
-              type                 = try(ebs_config.value.type, "gp3")
-              volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+              iops                 = ebs_config.value.iops
+              size                 = ebs_config.value.size
+              type                 = ebs_config.value.type
+              volumes_per_instance = ebs_config.value.volumes_per_instance
             }
           }
 
           instance_type     = instance_type_configs.value.instance_type
-          weighted_capacity = try(instance_type_configs.value.weighted_capacity, null)
+          weighted_capacity = instance_type_configs.value.weighted_capacity
         }
       }
 
       dynamic "launch_specifications" {
-        for_each = try([core_instance_fleet.value.launch_specifications], [])
+        for_each = core_instance_fleet.value.launch_specifications != null ? [core_instance_fleet.value.launch_specifications] : []
 
         content {
           dynamic "on_demand_specification" {
-            for_each = try([launch_specifications.value.on_demand_specification], [])
+            for_each = launch_specifications.value.on_demand_specification != null ? [launch_specifications.value.on_demand_specification] : []
 
             content {
-              allocation_strategy = try(on_demand_specification.value.allocation_strategy, "lowest-price")
+              allocation_strategy = on_demand_specification.value.allocation_strategy
             }
           }
 
           dynamic "spot_specification" {
-            for_each = try([launch_specifications.value.spot_specification], [])
+            for_each = launch_specifications.value.spot_specification != null ? [launch_specifications.value.spot_specification] : []
 
             content {
-              allocation_strategy      = try(spot_specification.value.allocation_strategy, "capacity-optimized")
-              block_duration_minutes   = try(launch_specifications.value.spot_specification.block_duration_minutes, null)
-              timeout_action           = try(launch_specifications.value.spot_specification.timeout_action, "SWITCH_TO_ON_DEMAND")
-              timeout_duration_minutes = try(launch_specifications.value.spot_specification.timeout_duration_minutes, 60)
+              allocation_strategy      = spot_specification.value.allocation_strategy
+              block_duration_minutes   = launch_specifications.value.spot_specification.block_duration_minutes
+              timeout_action           = launch_specifications.value.spot_specification.timeout_action
+              timeout_duration_minutes = launch_specifications.value.spot_specification.timeout_duration_minutes
             }
           }
         }
       }
 
-      name                      = try(core_instance_fleet.value.name, null)
-      target_on_demand_capacity = try(core_instance_fleet.value.target_on_demand_capacity, null)
-      target_spot_capacity      = try(core_instance_fleet.value.target_spot_capacity, null)
+      name                      = core_instance_fleet.value.name
+      target_on_demand_capacity = core_instance_fleet.value.target_on_demand_capacity
+      target_spot_capacity      = core_instance_fleet.value.target_spot_capacity
     }
   }
 
   dynamic "core_instance_group" {
-    for_each = length(var.core_instance_group) > 0 ? [var.core_instance_group] : []
+    for_each = var.core_instance_group != null ? [var.core_instance_group] : []
 
     content {
-      autoscaling_policy = try(core_instance_group.value.autoscaling_policy, null)
-      bid_price          = try(core_instance_group.value.bid_price, null)
+      autoscaling_policy = core_instance_group.value.autoscaling_policy
+      bid_price          = core_instance_group.value.bid_price
 
       dynamic "ebs_config" {
-        for_each = try(core_instance_group.value.ebs_config, [])
+        for_each = core_instance_group.value.ebs_config != null ? core_instance_group.value.ebs_config : []
 
         content {
-          iops                 = try(ebs_config.value.iops, null)
-          size                 = try(ebs_config.value.size, 64)
-          throughput           = try(ebs_config.value.throughput, null)
-          type                 = try(ebs_config.value.type, "gp3")
-          volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+          iops                 = ebs_config.value.iops
+          size                 = ebs_config.value.size
+          throughput           = ebs_config.value.throughput
+          type                 = ebs_config.value.type
+          volumes_per_instance = ebs_config.value.volumes_per_instance
         }
       }
 
-      instance_count = try(core_instance_group.value.instance_count, null)
+      instance_count = core_instance_group.value.instance_count
       instance_type  = core_instance_group.value.instance_type
-      name           = try(core_instance_group.value.name, null)
+      name           = core_instance_group.value.name
     }
   }
 
@@ -162,27 +166,27 @@ resource "aws_emr_cluster" "this" {
     for_each = length(var.ec2_attributes) > 0 || local.create_managed_security_groups || local.create_iam_instance_profile ? [var.ec2_attributes] : []
 
     content {
-      additional_master_security_groups = try(ec2_attributes.value.additional_master_security_groups, null)
-      additional_slave_security_groups  = try(ec2_attributes.value.additional_slave_security_groups, null)
-      emr_managed_master_security_group = local.create_managed_security_groups ? aws_security_group.master[0].id : try(ec2_attributes.value.emr_managed_master_security_group, null)
-      emr_managed_slave_security_group  = local.create_managed_security_groups ? aws_security_group.slave[0].id : try(ec2_attributes.value.emr_managed_slave_security_group, null)
+      additional_master_security_groups = ec2_attributes.value.additional_master_security_groups
+      additional_slave_security_groups  = ec2_attributes.value.additional_slave_security_groups
+      emr_managed_master_security_group = local.create_managed_security_groups ? aws_security_group.master[0].id : ec2_attributes.value.emr_managed_master_security_group
+      emr_managed_slave_security_group  = local.create_managed_security_groups ? aws_security_group.slave[0].id : ec2_attributes.value.emr_managed_slave_security_group
       instance_profile                  = local.create_iam_instance_profile ? aws_iam_instance_profile.this[0].name : ec2_attributes.value.instance_profile
-      key_name                          = try(ec2_attributes.value.key_name, null)
-      service_access_security_group     = local.create_service_security_group ? aws_security_group.service[0].id : try(ec2_attributes.value.service_access_security_group, null)
-      subnet_id                         = try(ec2_attributes.value.subnet_id, null)
-      subnet_ids                        = try(ec2_attributes.value.subnet_ids, null)
+      key_name                          = ec2_attributes.value.key_name
+      service_access_security_group     = local.create_service_security_group ? aws_security_group.service[0].id : ec2_attributes.value.service_access_security_group
+      subnet_id                         = ec2_attributes.value.subnet_id
+      subnet_ids                        = ec2_attributes.value.subnet_ids
     }
   }
 
   keep_job_flow_alive_when_no_steps = var.keep_job_flow_alive_when_no_steps
 
   dynamic "kerberos_attributes" {
-    for_each = length(var.kerberos_attributes) > 0 ? [var.kerberos_attributes] : []
+    for_each = var.kerberos_attributes != null ? [var.kerberos_attributes] : []
 
     content {
-      ad_domain_join_password              = try(kerberos_attributes.value.ad_domain_join_password, null)
-      ad_domain_join_user                  = try(kerberos_attributes.value.ad_domain_join_user, null)
-      cross_realm_trust_principal_password = try(kerberos_attributes.value.cross_realm_trust_principal_password, null)
+      ad_domain_join_password              = kerberos_attributes.value.ad_domain_join_password
+      ad_domain_join_user                  = kerberos_attributes.value.ad_domain_join_user
+      cross_realm_trust_principal_password = kerberos_attributes.value.cross_realm_trust_principal_password
       kdc_admin_password                   = kerberos_attributes.value.kdc_admin_password
       realm                                = kerberos_attributes.value.realm
     }
@@ -193,125 +197,127 @@ resource "aws_emr_cluster" "this" {
   log_uri                   = var.log_uri
 
   dynamic "master_instance_fleet" {
-    for_each = length(var.master_instance_fleet) > 0 ? [var.master_instance_fleet] : []
+    for_each = var.master_instance_fleet != null ? [var.master_instance_fleet] : []
 
     content {
       dynamic "instance_type_configs" {
-        for_each = try(master_instance_fleet.value.instance_type_configs, [])
+        for_each = master_instance_fleet.value.instance_type_configs != null ? master_instance_fleet.value.instance_type_configs : []
 
         content {
-          bid_price                                  = try(instance_type_configs.value.bid_price, null)
-          bid_price_as_percentage_of_on_demand_price = try(instance_type_configs.value.bid_price_as_percentage_of_on_demand_price, null)
+          bid_price                                  = instance_type_configs.value.bid_price
+          bid_price_as_percentage_of_on_demand_price = instance_type_configs.value.bid_price_as_percentage_of_on_demand_price
 
           dynamic "configurations" {
-            for_each = try(instance_type_configs.value.configurations, [])
+            for_each = instance_type_configs.value.configurations != null ? instance_type_configs.value.configurations : []
 
             content {
-              classification = try(configurations.value.classification, null)
-              properties     = try(configurations.value.properties, null)
+              classification = configurations.value.classification
+              properties     = configurations.value.properties
             }
           }
 
           dynamic "ebs_config" {
-            for_each = try(instance_type_configs.value.ebs_config, [])
+            for_each = instance_type_configs.value.ebs_config != null ? instance_type_configs.value.ebs_config : []
 
             content {
-              iops                 = try(ebs_config.value.iops, null)
-              size                 = try(ebs_config.value.size, 64)
-              type                 = try(ebs_config.value.type, "gp3")
-              volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+              iops                 = ebs_config.value.iops
+              size                 = ebs_config.value.size
+              type                 = ebs_config.value.type
+              volumes_per_instance = ebs_config.value.volumes_per_instance
             }
           }
 
           instance_type     = instance_type_configs.value.instance_type
-          weighted_capacity = try(instance_type_configs.value.weighted_capacity, null)
+          weighted_capacity = instance_type_configs.value.weighted_capacity
         }
       }
 
       dynamic "launch_specifications" {
-        for_each = try([master_instance_fleet.value.launch_specifications], [])
+        for_each = master_instance_fleet.value.launch_specifications != null ? [master_instance_fleet.value.launch_specifications] : []
 
         content {
           dynamic "on_demand_specification" {
-            for_each = try([launch_specifications.value.on_demand_specification], [])
+            for_each = launch_specifications.value.on_demand_specification != null ? [launch_specifications.value.on_demand_specification] : []
 
             content {
-              allocation_strategy = try(on_demand_specification.value.allocation_strategy, "lowest-price")
+              allocation_strategy = on_demand_specification.value.allocation_strategy
             }
           }
 
           dynamic "spot_specification" {
-            for_each = try([launch_specifications.value.spot_specification], [])
+            for_each = launch_specifications.value.spot_specification != null ? [launch_specifications.value.spot_specification] : []
 
             content {
-              allocation_strategy      = try(spot_specification.value.allocation_strategy, "capacity-optimized")
-              block_duration_minutes   = try(launch_specifications.value.spot_specification.block_duration_minutes, null)
-              timeout_action           = try(launch_specifications.value.spot_specification.timeout_action, "SWITCH_TO_ON_DEMAND")
-              timeout_duration_minutes = try(launch_specifications.value.spot_specification.timeout_duration_minutes, 60)
+              allocation_strategy      = spot_specification.value.allocation_strategy
+              block_duration_minutes   = launch_specifications.value.spot_specification.block_duration_minutes
+              timeout_action           = launch_specifications.value.spot_specification.timeout_action
+              timeout_duration_minutes = launch_specifications.value.spot_specification.timeout_duration_minutes
             }
           }
         }
       }
 
-      name                      = try(master_instance_fleet.value.name, null)
-      target_on_demand_capacity = try(master_instance_fleet.value.target_on_demand_capacity, null)
-      target_spot_capacity      = try(master_instance_fleet.value.target_spot_capacity, null)
+      name                      = master_instance_fleet.value.name
+      target_on_demand_capacity = master_instance_fleet.value.target_on_demand_capacity
+      target_spot_capacity      = master_instance_fleet.value.target_spot_capacity
     }
   }
 
   dynamic "master_instance_group" {
-    for_each = length(var.master_instance_group) > 0 ? [var.master_instance_group] : []
+    for_each = var.master_instance_group != null ? [var.master_instance_group] : []
 
     content {
-      bid_price = try(master_instance_group.value.bid_price, null)
+      bid_price = master_instance_group.value.bid_price
 
       dynamic "ebs_config" {
-        for_each = try(master_instance_group.value.ebs_config, [])
+        for_each = master_instance_group.value.ebs_config != null ? master_instance_group.value.ebs_config : []
 
         content {
-          iops                 = try(ebs_config.value.iops, null)
-          size                 = try(ebs_config.value.size, 64)
-          throughput           = try(ebs_config.value.throughput, null)
-          type                 = try(ebs_config.value.type, "gp3")
-          volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+          iops                 = ebs_config.value.iops
+          size                 = ebs_config.value.size
+          throughput           = ebs_config.value.throughput
+          type                 = ebs_config.value.type
+          volumes_per_instance = ebs_config.value.volumes_per_instance
         }
       }
 
-      instance_count = try(master_instance_group.value.instance_count, null)
+      instance_count = master_instance_group.value.instance_count
       instance_type  = master_instance_group.value.instance_type
-      name           = try(master_instance_group.value.name, null)
+      name           = master_instance_group.value.name
     }
   }
 
+  name             = var.name
+  os_release_label = var.os_release_label
+
   dynamic "placement_group_config" {
-    for_each = var.placement_group_config
+    for_each = var.placement_group_config != null ? var.placement_group_config : []
 
     content {
       instance_role      = placement_group_config.value.instance_role
-      placement_strategy = try(placement_group_config.value.placement_strategy, null)
+      placement_strategy = placement_group_config.value.placement_strategy
     }
   }
 
-  name                   = var.name
   release_label          = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
   scale_down_behavior    = var.scale_down_behavior
   security_configuration = var.create_security_configuration ? aws_emr_security_configuration.this[0].name : var.security_configuration_name
   service_role           = local.create_service_iam_role ? aws_iam_role.service[0].arn : var.service_iam_role_arn
 
   dynamic "step" {
-    for_each = var.step
+    for_each = var.step != null ? var.step : []
 
     content {
       action_on_failure = step.value.action_on_failure
 
       dynamic "hadoop_jar_step" {
-        for_each = try([step.value.hadoop_jar_step], [])
+        for_each = step.value.hadoop_jar_step != null ? [step.value.hadoop_jar_step] : []
 
         content {
-          args       = try(hadoop_jar_step.value.args, null)
+          args       = hadoop_jar_step.value.args
           jar        = hadoop_jar_step.value.jar
-          main_class = try(hadoop_jar_step.value.main_class, null)
-          properties = try(hadoop_jar_step.value.properties, null)
+          main_class = hadoop_jar_step.value.main_class
+          properties = hadoop_jar_step.value.properties
         }
       }
 
@@ -353,70 +359,70 @@ resource "aws_emr_cluster" "this" {
 ################################################################################
 
 resource "aws_emr_instance_fleet" "this" {
-  for_each = { for k, v in [var.task_instance_fleet] : k => v if var.create && length(var.task_instance_fleet) > 0 }
+  for_each = var.create && var.task_instance_fleet != null ? var.task_instance_fleet : object({})
 
   cluster_id = aws_emr_cluster.this[0].id
 
   dynamic "instance_type_configs" {
-    for_each = try(each.value.instance_type_configs, [])
+    for_each = each.value.instance_type_configs != null ? each.value.instance_type_configs : []
 
     content {
-      bid_price                                  = try(instance_type_configs.value.bid_price, null)
-      bid_price_as_percentage_of_on_demand_price = try(instance_type_configs.value.bid_price_as_percentage_of_on_demand_price, 60)
+      bid_price                                  = instance_type_configs.value.bid_price
+      bid_price_as_percentage_of_on_demand_price = instance_type_configs.value.bid_price_as_percentage_of_on_demand_price
 
       dynamic "configurations" {
-        for_each = try(instance_type_configs.value.configurations, [])
+        for_each = instance_type_configs.value.configurations != null ? instance_type_configs.value.configurations : []
 
         content {
-          classification = try(configurations.value.classification, null)
-          properties     = try(configurations.value.properties, null)
+          classification = configurations.value.classification
+          properties     = configurations.value.properties
         }
       }
 
       dynamic "ebs_config" {
-        for_each = try(instance_type_configs.value.ebs_config, [])
+        for_each = instance_type_configs.value.ebs_config != null ? instance_type_configs.value.ebs_config : []
 
         content {
-          iops                 = try(ebs_config.value.iops, null)
-          size                 = try(ebs_config.value.size, 64)
-          type                 = try(ebs_config.value.type, "gp3")
-          volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+          iops                 = ebs_config.value.iops
+          size                 = ebs_config.value.size
+          type                 = ebs_config.value.type
+          volumes_per_instance = ebs_config.value.volumes_per_instance
         }
       }
 
       instance_type     = instance_type_configs.value.instance_type
-      weighted_capacity = try(instance_type_configs.value.weighted_capacity, null)
+      weighted_capacity = instance_type_configs.value.weighted_capacity
     }
   }
 
   dynamic "launch_specifications" {
-    for_each = try([each.value.launch_specifications], [])
+    for_each = each.value.launch_specifications != null ? [each.value.launch_specifications] : []
 
     content {
       dynamic "on_demand_specification" {
-        for_each = try([launch_specifications.value.on_demand_specification], [])
+        for_each = launch_specifications.value.on_demand_specification != null ? [launch_specifications.value.on_demand_specification] : []
 
         content {
-          allocation_strategy = try(on_demand_specification.value.allocation_strategy, "lowest-price")
+          allocation_strategy = on_demand_specification.value.allocation_strategy
         }
       }
 
       dynamic "spot_specification" {
-        for_each = try([launch_specifications.value.spot_specification], [])
+        for_each = launch_specifications.value.spot_specification != null ? [launch_specifications.value.spot_specification] : []
 
         content {
-          allocation_strategy      = try(spot_specification.value.allocation_strategy, "capacity-optimized")
-          block_duration_minutes   = try(launch_specifications.value.spot_specification.block_duration_minutes, null)
-          timeout_action           = try(launch_specifications.value.spot_specification.timeout_action, "SWITCH_TO_ON_DEMAND")
-          timeout_duration_minutes = try(launch_specifications.value.spot_specification.timeout_duration_minutes, 60)
+          allocation_strategy      = spot_specification.value.allocation_strategy
+          block_duration_minutes   = launch_specifications.value.spot_specification.block_duration_minutes
+          timeout_action           = launch_specifications.value.spot_specification.timeout_action
+          timeout_duration_minutes = launch_specifications.value.spot_specification.timeout_duration_minutes
         }
       }
     }
   }
 
-  name                      = try(each.value.name, null)
-  target_on_demand_capacity = try(each.value.target_on_demand_capacity, null)
-  target_spot_capacity      = try(each.value.target_spot_capacity, null)
+  name                      = each.value.name
+  target_on_demand_capacity = each.value.target_on_demand_capacity
+  target_spot_capacity      = each.value.target_spot_capacity
 }
 
 ################################################################################
@@ -425,29 +431,28 @@ resource "aws_emr_instance_fleet" "this" {
 ################################################################################
 
 resource "aws_emr_instance_group" "this" {
-  for_each = { for k, v in [var.task_instance_group] : k => v if var.create && length(var.task_instance_group) > 0 }
+  for_each = var.create && var.task_instance_group != null ? var.task_instance_group : object({})
 
-  autoscaling_policy  = try(each.value.autoscaling_policy, null)
-  bid_price           = try(each.value.bid_price, null)
+  autoscaling_policy  = each.value.autoscaling_policy
+  bid_price           = each.value.bid_price
   cluster_id          = aws_emr_cluster.this[0].id
-  configurations_json = try(each.value.configurations_json, null)
+  configurations_json = each.value.configurations_json
 
   dynamic "ebs_config" {
-    for_each = try(each.value.ebs_config, [])
+    for_each = each.value.ebs_config != null ? each.value.ebs_config : []
 
     content {
-      iops = try(ebs_config.value.iops, null)
-      size = try(ebs_config.value.size, 64)
-      # throughput           = try(ebs_config.value.throughput, null)
-      type                 = try(ebs_config.value.type, "gp3")
-      volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+      iops                 = ebs_config.value.iops
+      size                 = ebs_config.value.size
+      type                 = ebs_config.value.type
+      volumes_per_instance = ebs_config.value.volumes_per_instance
     }
   }
 
-  ebs_optimized  = try(each.value.ebs_optimized, true)
-  instance_count = try(each.value.instance_count, null)
+  ebs_optimized  = each.value.ebs_optimized
+  instance_count = each.value.instance_count
   instance_type  = each.value.instance_type
-  name           = try(each.value.name, null)
+  name           = each.value.name
 }
 
 ################################################################################
@@ -455,16 +460,16 @@ resource "aws_emr_instance_group" "this" {
 ################################################################################
 
 resource "aws_emr_managed_scaling_policy" "this" {
-  count = var.create && length(var.managed_scaling_policy) > 0 ? 1 : 0
+  count = var.create && var.managed_scaling_policy != null ? 1 : 0
 
   cluster_id = aws_emr_cluster.this[0].id
 
   compute_limits {
-    unit_type                       = var.managed_scaling_policy.unit_type
-    minimum_capacity_units          = var.managed_scaling_policy.minimum_capacity_units
     maximum_capacity_units          = var.managed_scaling_policy.maximum_capacity_units
-    maximum_core_capacity_units     = try(var.managed_scaling_policy.maximum_core_capacity_units, null)
-    maximum_ondemand_capacity_units = try(var.managed_scaling_policy.maximum_ondemand_capacity_units, null)
+    maximum_core_capacity_units     = var.managed_scaling_policy.maximum_core_capacity_units
+    maximum_ondemand_capacity_units = var.managed_scaling_policy.maximum_ondemand_capacity_units
+    minimum_capacity_units          = var.managed_scaling_policy.minimum_capacity_units
+    unit_type                       = var.managed_scaling_policy.unit_type
   }
 }
 
@@ -760,20 +765,17 @@ resource "aws_security_group" "master" {
 resource "aws_security_group_rule" "master" {
   for_each = { for k, v in var.master_security_group_rules : k => v if local.create_managed_security_groups }
 
-  # Required
-  security_group_id = aws_security_group.master[0].id
-  protocol          = try(each.value.protocol, "tcp")
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = try(each.value.type, "egress")
-
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = try(each.value.source_slave_security_group, false) ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
+  description              = each.value.description
+  cidr_blocks              = each.value.cidr_blocks
+  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
+  prefix_list_ids          = each.value.prefix_list_ids
+  self                     = each.value.self
+  security_group_id        = aws_security_group.master[0].id
+  from_port                = each.value.from_port
+  to_port                  = each.value.to_port
+  type                     = each.value.type
+  protocol                 = each.value.protocol
+  source_security_group_id = each.value.source_slave_security_group ? aws_security_group.slave[0].id : lookup(each.value, "source_security_group_id", null)
 }
 
 ################################################################################
@@ -811,20 +813,17 @@ resource "aws_security_group" "slave" {
 resource "aws_security_group_rule" "slave" {
   for_each = { for k, v in var.slave_security_group_rules : k => v if local.create_managed_security_groups }
 
-  # Required
-  security_group_id = aws_security_group.slave[0].id
-  protocol          = try(each.value.protocol, "tcp")
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = try(each.value.type, "egress")
-
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = try(each.value.source_master_security_group, false) ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
+  description              = each.value.description
+  cidr_blocks              = each.value.cidr_blocks
+  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
+  prefix_list_ids          = each.value.prefix_list_ids
+  self                     = each.value.self
+  security_group_id        = aws_security_group.master[0].id
+  from_port                = each.value.from_port
+  to_port                  = each.value.to_port
+  type                     = each.value.type
+  protocol                 = each.value.protocol
+  source_security_group_id = each.value.source_master_security_group ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
 }
 
 ################################################################################
@@ -893,18 +892,15 @@ resource "aws_security_group" "service" {
 resource "aws_security_group_rule" "service" {
   for_each = { for k, v in local.service_security_group_rules : k => v if local.create_service_security_group }
 
-  # Required
-  security_group_id = aws_security_group.service[0].id
-  protocol          = try(each.value.protocol, "tcp")
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = try(each.value.type, "egress")
-
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = try(each.value.source_master_security_group, false) ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
+  description              = each.value.description
+  cidr_blocks              = each.value.cidr_blocks
+  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
+  prefix_list_ids          = each.value.prefix_list_ids
+  self                     = each.value.self
+  security_group_id        = aws_security_group.master[0].id
+  from_port                = each.value.from_port
+  to_port                  = each.value.to_port
+  type                     = each.value.type
+  protocol                 = each.value.protocol
+  source_security_group_id = each.value.source_master_security_group ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
 }

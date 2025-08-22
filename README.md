@@ -348,6 +348,7 @@ No modules.
 |------|------|
 | [aws_emr_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_cluster) | resource |
 | [aws_emr_instance_fleet.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_instance_fleet) | resource |
+| [aws_emr_instance_fleet.this_ignore_capacity_drifts](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_instance_fleet) | resource |
 | [aws_emr_instance_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_instance_group) | resource |
 | [aws_emr_managed_scaling_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_managed_scaling_policy) | resource |
 | [aws_emr_security_configuration.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_security_configuration) | resource |
@@ -407,6 +408,7 @@ No modules.
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the IAM role | `string` | `null` | no |
 | <a name="input_iam_role_tags"></a> [iam\_role\_tags](#input\_iam\_role\_tags) | A map of additional tags to add to the IAM role created | `map(string)` | `{}` | no |
 | <a name="input_iam_role_use_name_prefix"></a> [iam\_role\_use\_name\_prefix](#input\_iam\_role\_use\_name\_prefix) | Determines whether the IAM role name is used as a prefix | `bool` | `true` | no |
+| <a name="input_ignore_task_fleet_capacity_drifts"></a> [ignore\_task\_fleet\_capacity\_drifts](#input\_ignore\_task\_fleet\_capacity\_drifts) | Whether to ignore capacity drifts for task instance fleets. If set to `true`, the task instance fleet will not be resized if the capacity drifts from the desired configuration. Default value is `false` | `bool` | `false` | no |
 | <a name="input_is_private_cluster"></a> [is\_private\_cluster](#input\_is\_private\_cluster) | Identifies whether the cluster is created in a private subnet | `bool` | `true` | no |
 | <a name="input_keep_job_flow_alive_when_no_steps"></a> [keep\_job\_flow\_alive\_when\_no\_steps](#input\_keep\_job\_flow\_alive\_when\_no\_steps) | Switch on/off run cluster with no steps or when all steps are complete (default is on) | `bool` | `null` | no |
 | <a name="input_kerberos_attributes"></a> [kerberos\_attributes](#input\_kerberos\_attributes) | Kerberos configuration for the cluster | `any` | `{}` | no |

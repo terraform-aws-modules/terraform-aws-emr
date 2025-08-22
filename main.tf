@@ -342,7 +342,74 @@ resource "aws_emr_cluster" "this" {
 ################################################################################
 
 resource "aws_emr_instance_fleet" "this" {
-  for_each = { for k, v in [var.task_instance_fleet] : k => v if var.create && length(var.task_instance_fleet) > 0 }
+  for_each = { for k, v in [var.task_instance_fleet] : k => v if var.create && length(var.task_instance_fleet) > 0 && !var.ignore_task_fleet_capacity_drifts }
+
+  cluster_id = aws_emr_cluster.this[0].id
+
+  dynamic "instance_type_configs" {
+    for_each = try(each.value.instance_type_configs, [])
+
+    content {
+      bid_price                                  = try(instance_type_configs.value.bid_price, null)
+      bid_price_as_percentage_of_on_demand_price = try(instance_type_configs.value.bid_price_as_percentage_of_on_demand_price, 60)
+
+      dynamic "configurations" {
+        for_each = try(instance_type_configs.value.configurations, [])
+
+        content {
+          classification = try(configurations.value.classification, null)
+          properties     = try(configurations.value.properties, null)
+        }
+      }
+
+      dynamic "ebs_config" {
+        for_each = try(instance_type_configs.value.ebs_config, [])
+
+        content {
+          iops                 = try(ebs_config.value.iops, null)
+          size                 = try(ebs_config.value.size, 64)
+          type                 = try(ebs_config.value.type, "gp3")
+          volumes_per_instance = try(ebs_config.value.volumes_per_instance, null)
+        }
+      }
+
+      instance_type     = instance_type_configs.value.instance_type
+      weighted_capacity = try(instance_type_configs.value.weighted_capacity, null)
+    }
+  }
+
+  dynamic "launch_specifications" {
+    for_each = try([each.value.launch_specifications], [])
+
+    content {
+      dynamic "on_demand_specification" {
+        for_each = try([launch_specifications.value.on_demand_specification], [])
+
+        content {
+          allocation_strategy = try(on_demand_specification.value.allocation_strategy, "lowest-price")
+        }
+      }
+
+      dynamic "spot_specification" {
+        for_each = try([launch_specifications.value.spot_specification], [])
+
+        content {
+          allocation_strategy      = try(spot_specification.value.allocation_strategy, "capacity-optimized")
+          block_duration_minutes   = try(launch_specifications.value.spot_specification.block_duration_minutes, null)
+          timeout_action           = try(launch_specifications.value.spot_specification.timeout_action, "SWITCH_TO_ON_DEMAND")
+          timeout_duration_minutes = try(launch_specifications.value.spot_specification.timeout_duration_minutes, 60)
+        }
+      }
+    }
+  }
+
+  name                      = try(each.value.name, null)
+  target_on_demand_capacity = try(each.value.target_on_demand_capacity, null)
+  target_spot_capacity      = try(each.value.target_spot_capacity, null)
+}
+
+resource "aws_emr_instance_fleet" "this_ignore_capacity_drifts" {
+  for_each = { for k, v in [var.task_instance_fleet] : k => v if var.create && length(var.task_instance_fleet) > 0 && var.ignore_task_fleet_capacity_drifts }
 
   cluster_id = aws_emr_cluster.this[0].id
 
@@ -408,10 +475,10 @@ resource "aws_emr_instance_fleet" "this" {
   target_spot_capacity      = try(each.value.target_spot_capacity, null)
 
   lifecycle {
-    ignore_changes = var.ignore_task_fleet_capacity_drifts ? [
-        target_on_demand_capacity,
-        target_spot_capacity
-      ] : []
+    ignore_changes = [
+      target_on_demand_capacity,
+      target_spot_capacity
+    ]
   }
 }
 

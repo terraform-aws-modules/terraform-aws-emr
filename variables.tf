@@ -209,6 +209,12 @@ variable "task_instance_group" {
   default     = {}
 }
 
+variable "ignore_task_fleet_capacity_drifts" {
+  description = "Whether to ignore capacity drifts for task instance fleets. If set to `true`, the task instance fleet will not be resized if the capacity drifts from the desired configuration. Default value is `false`"
+  type        = bool
+  default     = false
+}
+
 ################################################################################
 # Managed Scaling Policy
 ################################################################################

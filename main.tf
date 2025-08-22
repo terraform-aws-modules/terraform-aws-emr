@@ -406,6 +406,13 @@ resource "aws_emr_instance_fleet" "this" {
   name                      = try(each.value.name, null)
   target_on_demand_capacity = try(each.value.target_on_demand_capacity, null)
   target_spot_capacity      = try(each.value.target_spot_capacity, null)
+
+  lifecycle {
+    ignore_changes = var.ignore_task_fleet_capacity_drifts ? [
+        target_on_demand_capacity,
+        target_spot_capacity
+      ] : []
+  }
 }
 
 ################################################################################

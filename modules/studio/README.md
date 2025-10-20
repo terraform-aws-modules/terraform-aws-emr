@@ -32,7 +32,7 @@ module "emr_studio" {
 }
 ```
 
-### IAM Identity Center authentication mode (SSO)
+### IAM authentication mode
 
 ```hcl
 module "emr_studio" {

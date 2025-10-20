@@ -2,22 +2,6 @@
 
 Terraform module which creates AWS EMR Virtual Cluster resources.
 
-Note: you will need to add the `AWSServiceRoleForAmazonEMRContainers` role to the clusters `aws-auth` configmap under the username of `emr-containers`. See below for reference:
-
-```hcl
-data "aws_caller_identity" "current" {}
-
-...
-  aws_auth_roles = [
-    {
-      # Required for EMR on EKS virtual cluster
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSServiceRoleForAmazonEMRContainers"
-      username = "emr-containers"
-    },
-  ]
-...
-```
-
 ## Usage
 
 See [`examples`](https://github.com/terraform-aws-modules/terraform-aws-emr/tree/master/examples) directory for working examples to reference:
@@ -57,6 +41,7 @@ module "emr_virtual_cluster" {
 module "emr_virtual_cluster" {
   source = "terraform-aws-modules/emr/aws//modules/virtual-cluster"
 
+  name      = "emr-default"
   namespace = "emr-default"
 
   tags = {

@@ -14,11 +14,10 @@ provider "kubernetes" {
   }
 }
 
-data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
-  name   = replace(basename(path.cwd), "-cluster", "")
+  name   = "virtual-emr"
   region = "eu-west-1"
 
   vpc_cidr = "10.0.0.0/16"
@@ -38,11 +37,13 @@ locals {
 module "complete" {
   source = "../../modules/virtual-cluster"
 
+  eks_cluster_id    = module.eks.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
   name             = "emr-custom"
   create_namespace = true
   namespace        = "emr-custom"
 
-  create_iam_role = true
   s3_bucket_arns = [
     module.s3_bucket.s3_bucket_arn,
     "${module.s3_bucket.s3_bucket_arn}/*"
@@ -60,6 +61,15 @@ module "complete" {
 module "default" {
   source = "../../modules/virtual-cluster"
 
+  eks_cluster_id    = module.eks.cluster_name
+  oidc_provider_arn = module.eks.oidc_provider_arn
+
+  s3_bucket_arns = [
+    module.s3_bucket.s3_bucket_arn,
+    "${module.s3_bucket.s3_bucket_arn}/*"
+  ]
+
+  name      = "emr-default"
   namespace = "emr-default"
 
   tags = local.tags
@@ -87,16 +97,6 @@ resource "null_resource" "s3_sync" {
     command = <<-EOT
       aws s3 sync s3://aws-data-analytics-workshops/emr-eks-workshop/scripts/ s3://${module.s3_bucket.s3_bucket_id}/emr-eks-workshop/scripts/
     EOT
-  }
-}
-
-resource "time_sleep" "coredns" {
-  create_duration = "60s"
-
-  # In practice, this generally won't be necessary since the cluster will be provisioned long before jobs are scheduled on the cluster
-  # However, for this example, its necessary to ensure CoreDNS is ready before we schedule the example job
-  triggers = {
-    coredns = module.eks.cluster_addons["coredns"].id
   }
 }
 
@@ -138,10 +138,6 @@ resource "null_resource" "start_job_run" {
         }'
     EOT
   }
-
-  depends_on = [
-    time_sleep.coredns
-  ]
 }
 
 ################################################################################
@@ -150,78 +146,32 @@ resource "null_resource" "start_job_run" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.13"
+  version = "~> 21.0"
 
-  cluster_name                   = local.name
-  cluster_version                = "1.27"
-  cluster_endpoint_public_access = true
+  name                   = local.name
+  kubernetes_version     = "1.33"
+  endpoint_public_access = true
 
-  cluster_addons = {
-    coredns = {
-      configuration_values = jsonencode({
-        computeType = "Fargate"
-        # Ensure that the we fully utilize the minimum amount of resources that are supplied by
-        # Fargate https://docs.aws.amazon.com/eks/latest/userguide/fargate-pod-configuration.html
-        # Fargate adds 256 MB to each pod's memory reservation for the required Kubernetes
-        # components (kubelet, kube-proxy, and containerd). Fargate rounds up to the following
-        # compute configuration that most closely matches the sum of vCPU and memory requests in
-        # order to ensure pods always have the resources that they need to run.
-        resources = {
-          limits = {
-            cpu = "0.25"
-            # We are targetting the smallest Task size of 512Mb, so we subtract 256Mb from the
-            # request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-          requests = {
-            cpu = "0.25"
-            # We are targetting the smallest Task size of 512Mb, so we subtract 256Mb from the
-            # request/limit to ensure we can fit within that task
-            memory = "256M"
-          }
-        }
-      })
-    }
-    kube-proxy = {}
-    vpc-cni    = {}
+  enable_cluster_creator_admin_permissions = true
+
+  compute_config = {
+    enabled    = true
+    node_pools = ["general-purpose", "system"]
   }
 
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = false
-  create_node_security_group    = false
-
-  manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    {
-      # Required for EMR on EKS virtual cluster
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/AWSServiceRoleForAmazonEMRContainers"
-      username = "emr-containers"
-    },
-  ]
-
-  fargate_profiles = {
-    emr_wildcard = {
-      selectors = [
-        { namespace = "emr-*" }
-      ]
-    }
-    kube_system = {
-      name = "kube-system"
-      selectors = [
-        { namespace = "kube-system" }
-      ]
-    }
-  }
+  # Auto Mode uses the cluster primary security group so these are not utilized
+  create_security_group      = false
+  create_node_security_group = false
 
   tags = local.tags
 }
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -246,7 +196,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.vpc_endpoints_sg.security_group_id]
@@ -295,7 +245,7 @@ module "vpc_endpoints_sg" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${local.name}-"
 
@@ -305,11 +255,6 @@ module "s3_bucket" {
 
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
 
   server_side_encryption_configuration = {
     rule = {

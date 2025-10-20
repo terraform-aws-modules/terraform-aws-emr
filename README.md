@@ -5,6 +5,7 @@ Terraform module which creates AWS EMR resources.
 [![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
 This module supports the creation of:
+
 - EMR clusters using instance fleets or instance groups deployed in public or private subnets
 - EMR Virtual clusters that run on Amazon EKS
 - EMR Serverless clusters
@@ -13,7 +14,8 @@ This module supports the creation of:
 - Security group for EMR `service` to support private clusters
 - IAM roles for autoscaling, EMR `service`, and EC2 instance profiles
 
-  :information_source: The appropriate resources have been tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` to support the use of the recommended IAM policy `"arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"`. Users are required to tag the appropriate VPC resources (VPC and subnets) as needed. See [here](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html) for more details regarding v2 of managed EMR policies and their usage requirements.
+> [!IMPORTANT]
+> The appropriate resources have been tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` to support the use of the recommended IAM policy `"arn:aws:iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"`. Users are required to tag the appropriate VPC resources (VPC and subnets) as needed. See [here](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html) for more details regarding v2 of managed EMR policies and their usage requirements.
 
 ## Usage
 

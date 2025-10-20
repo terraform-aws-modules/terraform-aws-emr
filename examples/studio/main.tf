@@ -3,10 +3,7 @@ provider "aws" {
 }
 
 data "aws_availability_zones" "available" {}
-
 data "aws_caller_identity" "current" {}
-
-data "aws_region" "current" {}
 
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
@@ -174,7 +171,7 @@ module "emr_studio_disabled" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -192,7 +189,7 @@ module "vpc" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${local.name}-"
 
@@ -221,7 +218,7 @@ module "s3_bucket" {
 
 module "kms" {
   source  = "terraform-aws-modules/kms/aws"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   deletion_window_in_days = 7
   description             = "KMS key for ${local.name}."
@@ -262,7 +259,7 @@ module "kms" {
         {
           test     = "StringEquals"
           variable = "kms:ViaService"
-          values   = ["s3.${data.aws_region.current.name}.amazonaws.com"]
+          values   = ["s3.${local.region}.amazonaws.com"]
         }
       ]
     }

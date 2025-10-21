@@ -3,12 +3,8 @@ provider "aws" {
 }
 
 data "aws_availability_zones" "available" {}
-
 data "aws_partition" "current" {}
-
 data "aws_caller_identity" "current" {}
-
-data "aws_region" "current" {}
 
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
@@ -270,7 +266,7 @@ module "emr_disabled" {
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -294,7 +290,7 @@ module "vpc" {
 
 module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
   vpc_id             = module.vpc.vpc_id
   security_group_ids = [module.vpc_endpoints_sg.security_group_id]
@@ -343,7 +339,7 @@ module "vpc_endpoints_sg" {
 
 module "s3_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   bucket_prefix = "${local.name}-"
 
@@ -353,11 +349,6 @@ module "s3_bucket" {
 
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
 
   server_side_encryption_configuration = {
     rule = {
@@ -427,7 +418,7 @@ data "aws_iam_policy_document" "autoscaling" {
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
-      values   = ["arn:aws:elasticmapreduce:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
+      values   = ["arn:aws:elasticmapreduce:${local.region}:${data.aws_caller_identity.current.account_id}:*"]
     }
   }
 }

@@ -5,8 +5,8 @@ locals {
 
   internal_role_name = try(coalesce(var.role_name, var.name), "")
 
-  role_name                 = var.create_kubernetes_role ? kubernetes_role_v1.this[0].metadata[0].name : local.internal_role_name
-  namespace                 = var.create_namespace ? kubernetes_namespace_v1.this[0].metadata[0].name : var.namespace
+  role_name                 = var.create_kubernetes_role ? try(kubernetes_role_v1.this[0].metadata[0].name, "") : local.internal_role_name
+  namespace                 = var.create_namespace ? try(kubernetes_namespace_v1.this[0].metadata[0].name, "") : var.namespace
   cloudwatch_log_group_name = coalesce(var.cloudwatch_log_group_name, "/emr-on-eks-logs/emr-workload/${local.namespace}")
 
   tags = merge(var.tags, { terraform-aws-modules = "emr" })

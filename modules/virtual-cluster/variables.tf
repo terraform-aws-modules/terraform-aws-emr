@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -32,8 +38,8 @@ variable "name" {
   default     = ""
 }
 
-variable "eks_cluster_id" {
-  description = "EKS cluster ID"
+variable "eks_cluster_name" {
+  description = "EKS cluster name"
   type        = string
   default     = ""
 }
@@ -70,7 +76,7 @@ variable "create_iam_role" {
   default     = true
 }
 
-variable "oidc_provider_arn" {
+variable "eks_oidc_provider_arn" {
   description = "OIDC provider ARN for the EKS cluster"
   type        = string
   default     = ""
@@ -114,7 +120,7 @@ variable "iam_role_permissions_boundary" {
 
 variable "iam_role_additional_policies" {
   description = "Additional policies to be added to the job execution IAM role"
-  type        = any
+  type        = map(string)
   default     = {}
 }
 
@@ -142,6 +148,12 @@ variable "cloudwatch_log_group_retention_in_days" {
 
 variable "cloudwatch_log_group_kms_key_id" {
   description = "If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html)"
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_log_group_class" {
+  description = "Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`"
   type        = string
   default     = null
 }

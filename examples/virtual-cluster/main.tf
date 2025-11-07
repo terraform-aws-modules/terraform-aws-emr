@@ -43,8 +43,8 @@ locals {
 module "complete" {
   source = "../../modules/virtual-cluster"
 
-  eks_cluster_id    = module.eks.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
+  eks_cluster_name      = module.eks.cluster_name
+  eks_oidc_provider_arn = module.eks.oidc_provider_arn
 
   name             = "emr-custom"
   create_namespace = true
@@ -67,8 +67,8 @@ module "complete" {
 module "default" {
   source = "../../modules/virtual-cluster"
 
-  eks_cluster_id    = module.eks.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
+  eks_cluster_name      = module.eks.cluster_name
+  eks_oidc_provider_arn = module.eks.oidc_provider_arn
 
   s3_bucket_arns = [
     module.s3_bucket.s3_bucket_arn,
@@ -159,6 +159,9 @@ module "eks" {
   endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
+
+  # Required for now until https://github.com/aws/containers-roadmap/issues/2397
+  enable_irsa = true
 
   compute_config = {
     enabled    = true

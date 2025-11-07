@@ -225,7 +225,7 @@ resource "aws_security_group" "this" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "this" {
-  for_each = { for k, v in var.security_group_ingress_rules : k => v if local.create_security_group }
+  for_each = var.security_group_ingress_rules != null && local.create_security_group ? var.security_group_ingress_rules : {}
 
   region = var.region
 
@@ -247,7 +247,7 @@ resource "aws_vpc_security_group_ingress_rule" "this" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "this" {
-  for_each = { for k, v in var.security_group_egress_rules : k => v if local.create_security_group }
+  for_each = var.security_group_egress_rules != null && local.create_security_group ? var.security_group_egress_rules : {}
 
   region = var.region
 

@@ -147,8 +147,8 @@ module "emr_studio_iam" {
 
   encryption_key_arn = module.kms.key_arn
 
-  service_role_statements = [
-    {
+  service_role_statements = {
+    "AllowKMS" = {
       effect = "Allow"
       actions = [
         "kms:Decrypt",
@@ -159,7 +159,7 @@ module "emr_studio_iam" {
       ]
       resources = [module.kms.key_arn]
     }
-  ]
+  }
 
   tags = local.tags
 }

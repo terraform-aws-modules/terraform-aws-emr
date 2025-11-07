@@ -222,8 +222,7 @@ variable "security_group_ingress_rules" {
     tags                         = optional(map(string), {})
     to_port                      = optional(string)
   }))
-  default  = {}
-  nullable = false
+  default = null
 }
 
 variable "security_group_egress_rules" {
@@ -248,5 +247,4 @@ variable "security_group_egress_rules" {
       cidr_ipv4   = "0.0.0.0/0"
     }
   }
-  nullable = false
 }

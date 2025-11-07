@@ -11,9 +11,9 @@ Configuration in this directory creates:
 To run this example you need to execute:
 
 ```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
+terraform init
+terraform plan
+terraform apply
 ```
 
 <!-- BEGIN_TF_DOCS -->

@@ -80,8 +80,13 @@ variable "vpc_id" {
 
 variable "session_mappings" {
   description = "A map of session mapping definitions to apply to the Studio"
-  type        = any
-  default     = {}
+  type = map(object({
+    identity_id        = optional(string)
+    identity_name      = optional(string)
+    identity_type      = string
+    session_policy_arn = optional(string)
+  }))
+  default = null
 }
 
 ################################################################################
@@ -117,6 +122,7 @@ variable "service_role_description" {
   type        = string
   default     = null
 }
+
 variable "service_role_path" {
   description = "IAM role path"
   type        = string
@@ -165,8 +171,28 @@ variable "service_role_s3_bucket_arns" {
 
 variable "service_role_statements" {
   description = "A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) for custom permission usage"
-  type        = any
-  default     = {}
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string, "Allow")
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      variable = string
+      values   = list(string)
+    })))
+  }))
+  default = null
 }
 
 ################################################################################
@@ -244,8 +270,28 @@ variable "user_role_s3_bucket_arns" {
 
 variable "user_role_statements" {
   description = "A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) for custom permission usage"
-  type        = any
-  default     = {}
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string, "Allow")
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      variable = string
+      values   = list(string)
+    })))
+  }))
+  default = null
 }
 
 ################################################################################
@@ -309,8 +355,7 @@ variable "engine_security_group_ingress_rules" {
     tags                                   = optional(map(string), {})
     to_port                                = optional(string)
   }))
-  default  = {}
-  nullable = false
+  default = null
 }
 
 variable "engine_security_group_egress_rules" {
@@ -336,7 +381,6 @@ variable "engine_security_group_egress_rules" {
       cidr_ipv4   = "0.0.0.0/0"
     }
   }
-  nullable = false
 }
 
 ################################################################################
@@ -372,8 +416,7 @@ variable "workspace_security_group_ingress_rules" {
     tags                                = optional(map(string), {})
     to_port                             = optional(string)
   }))
-  default  = {}
-  nullable = false
+  default = null
 }
 
 variable "workspace_security_group_egress_rules" {
@@ -392,6 +435,5 @@ variable "workspace_security_group_egress_rules" {
     tags                                = optional(map(string), {})
     to_port                             = optional(string)
   }))
-  default  = {}
-  nullable = false
+  default = null
 }

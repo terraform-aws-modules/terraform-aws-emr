@@ -3,11 +3,19 @@ data "aws_region" "current" {
 
   region = var.region
 }
+
 data "aws_partition" "current" {
   count = var.create ? 1 : 0
 }
+
 data "aws_caller_identity" "current" {
   count = var.create ? 1 : 0
+}
+
+data "aws_service_principal" "this" {
+  for_each = { for svc in ["application-autoscaling", "ec2", "elasticmapreduce"] : svc => svc if var.create }
+
+  service_name = each.key
 }
 
 data "aws_emr_release_labels" "this" {
@@ -26,12 +34,15 @@ data "aws_emr_release_labels" "this" {
 }
 
 locals {
-  tags = merge(var.tags, { terraform-aws-modules = "emr" })
-
   region     = try(data.aws_region.current[0].region, "")
-  dns_suffix = try(data.aws_partition.current[0].dns_suffix, "")
   partition  = try(data.aws_partition.current[0].partition, "")
   account_id = try(data.aws_caller_identity.current[0].account_id, "")
+
+  application_autoscaling_sp_name = try(data.aws_service_principal.this["application-autoscaling"].name, "")
+  ec2_sp_name                     = try(data.aws_service_principal.this["ec2"].name, "")
+  elasticmapreduce_sp_name        = try(data.aws_service_principal.this["elasticmapreduce"].name, "")
+
+  tags = merge(var.tags, { terraform-aws-modules = "emr" })
 }
 
 ################################################################################
@@ -529,8 +540,8 @@ data "aws_iam_policy_document" "autoscaling" {
     principals {
       type = "Service"
       identifiers = [
-        "elasticmapreduce.${local.dns_suffix}",
-        "application-autoscaling.${local.dns_suffix}"
+        local.elasticmapreduce_sp_name,
+        local.application_autoscaling_sp_name,
       ]
     }
 
@@ -592,10 +603,8 @@ data "aws_iam_policy_document" "service" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
-      identifiers = [
-        "elasticmapreduce.${local.dns_suffix}",
-      ]
+      type        = "Service"
+      identifiers = [local.elasticmapreduce_sp_name]
     }
 
     condition {
@@ -642,8 +651,8 @@ data "aws_iam_policy_document" "service_pass_role" {
       test     = "StringEquals"
       variable = "iam:PassedToService"
       values = [
-        "application-autoscaling.${local.dns_suffix}",
-        "ec2.${local.dns_suffix}",
+        local.application_autoscaling_sp_name,
+        local.ec2_sp_name,
       ]
     }
   }
@@ -685,7 +694,7 @@ data "aws_iam_policy_document" "instance_profile" {
 
     principals {
       type        = "Service"
-      identifiers = ["ec2.${local.dns_suffix}"]
+      identifiers = [local.ec2_sp_name]
     }
   }
 }
@@ -764,7 +773,7 @@ resource "aws_security_group" "master" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "master" {
-  for_each = { for k, v in var.master_security_group_ingress_rules : k => v if local.create_managed_security_groups }
+  for_each = var.master_security_group_ingress_rules != null && local.create_managed_security_groups ? var.master_security_group_ingress_rules : {}
 
   region = var.region
 
@@ -786,7 +795,7 @@ resource "aws_vpc_security_group_ingress_rule" "master" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "master" {
-  for_each = { for k, v in var.master_security_group_egress_rules : k => v if local.create_managed_security_groups }
+  for_each = var.master_security_group_egress_rules != null && local.create_managed_security_groups ? var.master_security_group_egress_rules : {}
 
   region = var.region
 
@@ -840,7 +849,7 @@ resource "aws_security_group" "slave" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "slave" {
-  for_each = { for k, v in var.slave_security_group_ingress_rules : k => v if local.create_managed_security_groups }
+  for_each = var.slave_security_group_ingress_rules != null && local.create_managed_security_groups ? var.slave_security_group_ingress_rules : {}
 
   region = var.region
 
@@ -862,7 +871,7 @@ resource "aws_vpc_security_group_ingress_rule" "slave" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "slave" {
-  for_each = { for k, v in var.slave_security_group_egress_rules : k => v if local.create_managed_security_groups }
+  for_each = var.slave_security_group_egress_rules != null && local.create_managed_security_groups ? var.slave_security_group_egress_rules : {}
 
   region = var.region
 
@@ -966,7 +975,7 @@ resource "aws_security_group" "service" {
 
 
 resource "aws_vpc_security_group_ingress_rule" "service" {
-  for_each = { for k, v in local.service_security_group_ingress_rules : k => v if local.create_service_security_group }
+  for_each = local.service_security_group_ingress_rules && local.create_service_security_group ? local.service_security_group_ingress_rules : {}
 
   region = var.region
 
@@ -988,7 +997,7 @@ resource "aws_vpc_security_group_ingress_rule" "service" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "service" {
-  for_each = { for k, v in local.service_security_group_egress_rules : k => v if local.create_service_security_group }
+  for_each = local.service_security_group_egress_rules != null && local.create_service_security_group ? local.service_security_group_egress_rules : {}
 
   region = var.region
 

@@ -226,8 +226,8 @@ module "emr_instance_group" {
   task_instance_group = {
     name           = "task-group"
     instance_count = 2
-    instance_type  = "c5.xlarge"
-    bid_price      = "0.1"
+    instance_type  = "c4.xlarge"
+    bid_price      = "0.17"
 
     ebs_config = [{
       size                 = 256
@@ -325,7 +325,7 @@ module "vpc_endpoints" {
   security_group_rules = {
     ingress_https = {
       description = "HTTPS from private subnets"
-      cidr_blocks = join(",", module.vpc.private_subnets_cidr_blocks)
+      cidr_blocks = module.vpc.private_subnets_cidr_blocks
     }
   }
 

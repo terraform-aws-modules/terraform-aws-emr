@@ -8,7 +8,8 @@ Configuration in this directory creates:
 - S3 bucket for EMR logs
 - VPC endpoints for EMR, STS, and S3
 
-Note: The private subnets will need to be tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` ([Reference](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources))
+> [!NOTE]
+> The private subnets will need to be tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` ([Reference](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources))
 
 ## Usage
 

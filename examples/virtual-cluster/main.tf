@@ -59,7 +59,7 @@ module "complete" {
   iam_role_path                 = "/"
   iam_role_description          = "EMR custom Role"
   iam_role_permissions_boundary = null
-  iam_role_additional_policies  = []
+  iam_role_additional_policies  = {}
 
   tags = local.tags
 }

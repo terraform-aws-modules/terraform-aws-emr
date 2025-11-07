@@ -214,8 +214,8 @@ module "emr_instance_group" {
   task_instance_group = {
     name           = "task-group"
     instance_count = 2
-    instance_type  = "c5.xlarge"
-    bid_price      = "0.1"
+    instance_type  = "c4.xlarge"
+    bid_price      = "0.17"
 
     ebs_config = [{
       size                 = 256

@@ -6,7 +6,8 @@ Configuration in this directory creates:
 - EMR serverless cluster running Hive
 - Disabled EMR serverless cluster
 
-Note: The public subnets will need to be tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` ([Reference](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources))
+> [!NOTE]
+> The public subnets will need to be tagged with `{ "for-use-with-amazon-emr-managed-policies" = true }` ([Reference](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources))
 
 ## Usage
 

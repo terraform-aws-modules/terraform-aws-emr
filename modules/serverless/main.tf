@@ -104,7 +104,7 @@ resource "aws_emrserverless_application" "this" {
     for_each = var.network_configuration != null ? [var.network_configuration] : []
 
     content {
-      security_group_ids = compact(concat([try(aws_security_group.this[0].id, "")], network_configuration.value.security_group_ids))
+      security_group_ids = compact(concat(aws_security_group.this[*].id, network_configuration.value.security_group_ids))
       subnet_ids         = network_configuration.value.subnet_ids
     }
   }
@@ -191,7 +191,7 @@ resource "aws_emrserverless_application" "this" {
 ################################################################################
 
 locals {
-  create_security_group = var.create && var.create_security_group && length(lookup(var.network_configuration, "subnet_ids", [])) > 0
+  create_security_group = var.create && var.create_security_group && try(var.network_configuration.subnet_ids, null) != null
   security_group_name   = try(coalesce(var.security_group_name, var.name), "")
 }
 

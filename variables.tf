@@ -82,7 +82,7 @@ variable "core_instance_fleet" {
       weighted_capacity = optional(number)
     })))
     launch_specifications = optional(object({
-      on_demand_specifications = optional(object({
+      on_demand_specification = optional(object({
         allocation_strategy = optional(string, "lowest-price")
       }))
       spot_specification = optional(object({
@@ -202,7 +202,7 @@ variable "master_instance_fleet" {
       weighted_capacity = optional(number)
     })))
     launch_specifications = optional(object({
-      on_demand_specifications = optional(object({
+      on_demand_specification = optional(object({
         allocation_strategy = optional(string, "lowest-price")
       }))
       spot_specification = optional(object({
@@ -348,7 +348,7 @@ variable "task_instance_fleet" {
       weighted_capacity = optional(number)
     })))
     launch_specifications = optional(object({
-      on_demand_specifications = optional(object({
+      on_demand_specification = optional(object({
         allocation_strategy = optional(string, "lowest-price")
       }))
       spot_specification = optional(object({
@@ -373,9 +373,9 @@ variable "task_instance_fleet" {
 variable "task_instance_group" {
   description = "Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [task node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master)"
   type = object({
-    autoscaling_policy = optional(string)
-    bid_price          = optional(string)
-    configuration_json = optional(string)
+    autoscaling_policy  = optional(string)
+    bid_price           = optional(string)
+    configurations_json = optional(string)
     ebs_config = optional(list(object({
       iops                 = optional(number)
       size                 = optional(number, 256)

@@ -371,12 +371,12 @@ resource "aws_emr_cluster" "this" {
 ################################################################################
 
 resource "aws_emr_instance_fleet" "this" {
-  for_each = var.create && var.task_instance_fleet != null ? var.task_instance_fleet : object({})
+  count = var.create && var.task_instance_fleet != null ? 1 : 0
 
   cluster_id = aws_emr_cluster.this[0].id
 
   dynamic "instance_type_configs" {
-    for_each = each.value.instance_type_configs != null ? each.value.instance_type_configs : []
+    for_each = var.task_instance_fleet.instance_type_configs != null ? var.task_instance_fleet.instance_type_configs : []
 
     content {
       bid_price                                  = instance_type_configs.value.bid_price
@@ -408,7 +408,7 @@ resource "aws_emr_instance_fleet" "this" {
   }
 
   dynamic "launch_specifications" {
-    for_each = each.value.launch_specifications != null ? [each.value.launch_specifications] : []
+    for_each = var.task_instance_fleet.launch_specifications != null ? [var.task_instance_fleet.launch_specifications] : []
 
     content {
       dynamic "on_demand_specification" {
@@ -432,9 +432,9 @@ resource "aws_emr_instance_fleet" "this" {
     }
   }
 
-  name                      = each.value.name
-  target_on_demand_capacity = each.value.target_on_demand_capacity
-  target_spot_capacity      = each.value.target_spot_capacity
+  name                      = var.task_instance_fleet.name
+  target_on_demand_capacity = var.task_instance_fleet.target_on_demand_capacity
+  target_spot_capacity      = var.task_instance_fleet.target_spot_capacity
 }
 
 ################################################################################
@@ -443,15 +443,15 @@ resource "aws_emr_instance_fleet" "this" {
 ################################################################################
 
 resource "aws_emr_instance_group" "this" {
-  for_each = var.create && var.task_instance_group != null ? var.task_instance_group : object({})
+  count = var.create && var.task_instance_group != null ? 1 : 0
 
-  autoscaling_policy  = each.value.autoscaling_policy
-  bid_price           = each.value.bid_price
+  autoscaling_policy  = var.task_instance_group.autoscaling_policy
+  bid_price           = var.task_instance_group.bid_price
   cluster_id          = aws_emr_cluster.this[0].id
-  configurations_json = each.value.configurations_json
+  configurations_json = var.task_instance_group.configurations_json
 
   dynamic "ebs_config" {
-    for_each = each.value.ebs_config != null ? each.value.ebs_config : []
+    for_each = var.task_instance_group.ebs_config != null ? var.task_instance_group.ebs_config : []
 
     content {
       iops                 = ebs_config.value.iops
@@ -461,10 +461,10 @@ resource "aws_emr_instance_group" "this" {
     }
   }
 
-  ebs_optimized  = each.value.ebs_optimized
-  instance_count = each.value.instance_count
-  instance_type  = each.value.instance_type
-  name           = each.value.name
+  ebs_optimized  = var.task_instance_group.ebs_optimized
+  instance_count = var.task_instance_group.instance_count
+  instance_type  = var.task_instance_group.instance_type
+  name           = var.task_instance_group.name
 }
 
 ################################################################################
@@ -511,7 +511,7 @@ resource "aws_emr_security_configuration" "this" {
 
 locals {
   # Autoscaling not supported when using instance fleets
-  create_autoscaling_iam_role = var.create && var.create_autoscaling_iam_role && length(merge(var.core_instance_fleet, var.master_instance_fleet)) == 0
+  create_autoscaling_iam_role = var.create && var.create_autoscaling_iam_role && (var.core_instance_fleet != null || var.master_instance_fleet != null) == 0
   autoscaling_iam_role_name   = coalesce(var.autoscaling_iam_role_name, "${var.name}-autoscaling")
 }
 
@@ -761,7 +761,7 @@ resource "aws_security_group" "master" {
     local.tags,
     var.managed_security_group_tags,
     {
-      "Name" = local.master_security_group_name
+      Name = local.master_security_group_name
       # https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
       "for-use-with-amazon-emr-managed-policies" = true
     },
@@ -788,7 +788,7 @@ resource "aws_vpc_security_group_ingress_rule" "master" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.master_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
@@ -810,7 +810,7 @@ resource "aws_vpc_security_group_egress_rule" "master" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.master_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = each.value.to_port
@@ -837,7 +837,7 @@ resource "aws_security_group" "slave" {
     local.tags,
     var.managed_security_group_tags,
     {
-      "Name" = local.slave_security_group_name
+      Name = local.slave_security_group_name
       # https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
       "for-use-with-amazon-emr-managed-policies" = true
     },
@@ -864,7 +864,7 @@ resource "aws_vpc_security_group_ingress_rule" "slave" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
@@ -886,7 +886,7 @@ resource "aws_vpc_security_group_egress_rule" "slave" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = each.value.to_port
@@ -909,14 +909,14 @@ locals {
         from_port                       = 9443
         ip_protocol                     = "tcp"
         prefix_list_id                  = null
-        reference_security_group_id     = null
+        referenced_security_group_id    = null
         reference_master_security_group = true
         tags                            = {}
         to_port                         = 9443
 
       }
     },
-    var.service_security_group_ingress_rules
+    var.service_security_group_ingress_rules != null ? var.service_security_group_ingress_rules : {}
   )
   service_security_group_egress_rules = merge(
     {
@@ -927,7 +927,7 @@ locals {
         from_port                       = 8443
         ip_protocol                     = "tcp"
         prefix_list_id                  = null
-        reference_security_group_id     = try(aws_security_group.slave[0].id, "")
+        referenced_security_group_id    = try(aws_security_group.slave[0].id, "")
         reference_master_security_group = false
         tags                            = {}
         to_port                         = 8443
@@ -939,13 +939,13 @@ locals {
         from_port                       = 8443
         ip_protocol                     = "tcp"
         prefix_list_id                  = null
-        reference_security_group_id     = null
+        referenced_security_group_id    = null
         reference_master_security_group = true
         tags                            = {}
         to_port                         = 8443
       }
     },
-    var.service_security_group_egress_rules
+    var.service_security_group_egress_rules != null ? var.service_security_group_egress_rules : {}
   )
 }
 
@@ -962,7 +962,7 @@ resource "aws_security_group" "service" {
     local.tags,
     var.managed_security_group_tags,
     {
-      "Name" = local.service_security_group_name
+      Name = local.service_security_group_name
       # https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
       "for-use-with-amazon-emr-managed-policies" = true
     },
@@ -973,9 +973,8 @@ resource "aws_security_group" "service" {
   }
 }
 
-
 resource "aws_vpc_security_group_ingress_rule" "service" {
-  for_each = local.service_security_group_ingress_rules && local.create_service_security_group ? local.service_security_group_ingress_rules : {}
+  for_each = { for k, v in local.service_security_group_ingress_rules : k => v if local.create_service_security_group }
 
   region = var.region
 
@@ -990,14 +989,14 @@ resource "aws_vpc_security_group_ingress_rule" "service" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.service_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
 }
 
 resource "aws_vpc_security_group_egress_rule" "service" {
-  for_each = local.service_security_group_egress_rules != null && local.create_service_security_group ? local.service_security_group_egress_rules : {}
+  for_each = { for k, v in local.service_security_group_egress_rules : k => v if local.create_service_security_group }
 
   region = var.region
 
@@ -1012,7 +1011,7 @@ resource "aws_vpc_security_group_egress_rule" "service" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { "Name" = coalesce(each.value.name, "${local.service_security_group_name}-${each.key}") },
+    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}"), null) },
     each.value.tags
   )
   to_port = each.value.to_port

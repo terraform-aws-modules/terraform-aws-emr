@@ -71,15 +71,6 @@ module "emr_serverless_spark" {
     subnet_ids = module.vpc.private_subnets
   }
 
-  security_group_rules = {
-    egress_all = {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-
   interactive_configuration = {
     livy_endpoint_enabled = true
     studio_enabled        = true

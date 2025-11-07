@@ -143,7 +143,7 @@ variable "ec2_attributes" {
     subnet_id                         = optional(string)
     subnet_ids                        = optional(list(string))
   })
-  default = {}
+  default = null
 }
 
 variable "keep_job_flow_alive_when_no_steps" {
@@ -312,9 +312,9 @@ variable "termination_protection" {
 }
 
 variable "unhealthy_node_replacement" {
-  description = "Whether whether Amazon EMR should gracefully replace core nodes that have degraded within the cluster. Default value is `false`"
+  description = "Whether whether Amazon EMR should gracefully replace core nodes that have degraded within the cluster. Default value is `true`"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "visible_to_all_users" {
@@ -614,31 +614,50 @@ variable "master_security_group_description" {
   default     = "Managed master security group"
 }
 
-variable "master_security_group_rules" {
-  description = "Security group rules to add to the security group created"
+variable "master_security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
   type = map(object({
-    description                 = optional(string)
-    cidr_blocks                 = optional(list(string))
-    ipv6_cidr_blocks            = optional(list(string))
-    prefix_list_ids             = optional(list(string))
-    self                        = optional(bool)
-    type                        = optional(string, "egress")
-    from_port                   = number
-    to_port                     = number
-    protocol                    = optional(string, "tcp")
-    source_slave_security_group = optional(bool, false)
+    name = optional(string)
+
+    cidr_ipv4                      = optional(string)
+    cidr_ipv6                      = optional(string)
+    description                    = optional(string)
+    from_port                      = optional(string)
+    ip_protocol                    = optional(string, "tcp")
+    prefix_list_id                 = optional(string)
+    referenced_security_group_id   = optional(string)
+    reference_slave_security_group = optional(bool, false)
+    tags                           = optional(map(string), {})
+    to_port                        = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "master_security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                      = optional(string)
+    cidr_ipv6                      = optional(string)
+    description                    = optional(string)
+    from_port                      = optional(string)
+    ip_protocol                    = optional(string, "tcp")
+    prefix_list_id                 = optional(string)
+    referenced_security_group_id   = optional(string)
+    reference_slave_security_group = optional(bool, false)
+    tags                           = optional(map(string), {})
+    to_port                        = optional(string)
   }))
   default = {
-    "default" = {
-      description      = "Allow all egress traffic"
-      type             = "egress"
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
+    "all-traffic" = {
+      description = "Allow all egress traffic"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
+  nullable = false
 }
 
 ################################################################################
@@ -651,31 +670,50 @@ variable "slave_security_group_description" {
   default     = "Managed slave security group"
 }
 
-variable "slave_security_group_rules" {
-  description = "Security group rules to add to the security group created"
+variable "slave_security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
   type = map(object({
-    description                  = optional(string)
-    cidr_blocks                  = optional(list(string))
-    ipv6_cidr_blocks             = optional(list(string))
-    prefix_list_ids              = optional(list(string))
-    self                         = optional(bool)
-    type                         = optional(string, "egress")
-    from_port                    = number
-    to_port                      = number
-    protocol                     = optional(string, "tcp")
-    source_master_security_group = optional(bool, false)
+    name = optional(string)
+
+    cidr_ipv4                       = optional(string)
+    cidr_ipv6                       = optional(string)
+    description                     = optional(string)
+    from_port                       = optional(string)
+    ip_protocol                     = optional(string, "tcp")
+    prefix_list_id                  = optional(string)
+    referenced_security_group_id    = optional(string)
+    reference_master_security_group = optional(bool, false)
+    tags                            = optional(map(string), {})
+    to_port                         = optional(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "slave_security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                       = optional(string)
+    cidr_ipv6                       = optional(string)
+    description                     = optional(string)
+    from_port                       = optional(string)
+    ip_protocol                     = optional(string, "tcp")
+    prefix_list_id                  = optional(string)
+    referenced_security_group_id    = optional(string)
+    reference_master_security_group = optional(bool, false)
+    tags                            = optional(map(string), {})
+    to_port                         = optional(string)
   }))
   default = {
-    "default" = {
-      description      = "Allow all egress traffic"
-      type             = "egress"
-      from_port        = 0
-      to_port          = 0
-      protocol         = "-1"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
+    "all-traffic" = {
+      description = "Allow all egress traffic"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
+  nullable = false
 }
 
 ################################################################################
@@ -694,19 +732,48 @@ variable "service_security_group_description" {
   default     = "Managed service access security group"
 }
 
-variable "service_security_group_rules" {
-  description = "Security group rules to add to the security group created"
+variable "service_security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
   type = map(object({
-    description                  = optional(string)
-    cidr_blocks                  = optional(list(string))
-    ipv6_cidr_blocks             = optional(list(string))
-    prefix_list_ids              = optional(list(string))
-    self                         = optional(bool)
-    type                         = optional(string, "egress")
-    from_port                    = number
-    to_port                      = number
-    protocol                     = optional(string, "tcp")
-    source_master_security_group = optional(bool, false)
+    name = optional(string)
+
+    cidr_ipv4                       = optional(string)
+    cidr_ipv6                       = optional(string)
+    description                     = optional(string)
+    from_port                       = optional(string)
+    ip_protocol                     = optional(string, "tcp")
+    prefix_list_id                  = optional(string)
+    referenced_security_group_id    = optional(string)
+    reference_master_security_group = optional(bool, false)
+    tags                            = optional(map(string), {})
+    to_port                         = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
+}
+
+variable "service_security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                       = optional(string)
+    cidr_ipv6                       = optional(string)
+    description                     = optional(string)
+    from_port                       = optional(string)
+    ip_protocol                     = optional(string, "tcp")
+    prefix_list_id                  = optional(string)
+    referenced_security_group_id    = optional(string)
+    reference_master_security_group = optional(bool, false)
+    tags                            = optional(map(string), {})
+    to_port                         = optional(string)
+  }))
+  default = {
+    "all-traffic" = {
+      description = "Allow all egress traffic"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
+  nullable = false
 }

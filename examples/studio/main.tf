@@ -88,27 +88,25 @@ module "emr_studio_complete" {
 
   # Engine security group
   engine_security_group_description = "EMR Studio complete engine security group"
-  engine_security_group_rules = {
+  engine_security_group_egress_rules = {
     example = {
       description = "Example egress to VPC network"
-      type        = "egress"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = [module.vpc.vpc_cidr_block]
+      ip_protocol = "tcp"
+      cidr_ipv4   = module.vpc.vpc_cidr_block
     }
   }
 
   # Workspace security group
   workspace_security_group_description = "EMR Studio complete workspace security group"
-  workspace_security_group_rules = {
+  workspace_security_group_egress_rules = {
     example = {
       description = "Example egress to internet"
-      type        = "egress"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = [module.vpc.vpc_cidr_block]
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 

@@ -663,16 +663,20 @@ locals {
   security_group_name    = try(coalesce(var.security_group_name, var.name), "")
 
   engine_security_group_name = "${local.security_group_name}-engine"
-  engine_security_group_rules = { for k, v in merge(
-    var.engine_security_group_rules,
+  engine_security_group_ingress_rules = { for k, v in merge(
+    var.engine_security_group_ingress_rules,
     {
-      workspace_ingress = {
-        protocol                 = "tcp"
-        from_port                = 18888
-        to_port                  = 18888
-        type                     = "ingress"
-        description              = "Allow traffic from any resources in the Workspace security group for EMR Studio"
-        source_security_group_id = try(aws_security_group.workspace[0].id, null)
+      workspace = {
+        cidr_ipv4                              = null
+        cidr_ipv6                              = null
+        description                            = "Allow traffic from any resources in the Workspace security group for EMR Studio"
+        from_port                              = 18888
+        ip_protocol                            = "tcp"
+        prefix_list_id                         = null
+        referenced_security_group_id           = null
+        referenced_workspace_security_group_id = true
+        tags                                   = {}
+        to_port                                = 18888
       }
     },
 
@@ -698,23 +702,48 @@ resource "aws_security_group" "engine" {
   }
 }
 
-resource "aws_security_group_rule" "engine" {
-  for_each = { for k, v in local.engine_security_group_rules : k => v if local.create_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "engine" {
+  for_each = { for k, v in local.engine_security_group_ingress_rules : k => v if local.create_security_groups }
 
-  # Required
-  security_group_id = aws_security_group.engine[0].id
-  protocol          = try(each.value.protocol, "tcp")
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = try(each.value.type, "egress")
+  region = var.region
 
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = lookup(each.value, "source_security_group_id", null)
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_workspace_security_group_id ? aws_security_group.workspace[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.engine[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.engine_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "engine" {
+  for_each = { for k, v in var.engine_security_group_egress_rules : k => v if local.create_security_groups }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_workspace_security_group_id ? aws_security_group.workspace[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.engine[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.engine_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }
 
 ################################################################################
@@ -723,22 +752,32 @@ resource "aws_security_group_rule" "engine" {
 
 locals {
   workspace_security_group_name = "${local.security_group_name}-workspace"
-  workspace_security_group_rules = { for k, v in merge(
-    var.workspace_security_group_rules,
+  workspace_security_group_egress_rules = { for k, v in merge(
+    var.workspace_security_group_egress_rules,
     {
-      engine_egress = {
-        protocol                 = "tcp"
-        from_port                = 18888
-        to_port                  = 18888
-        description              = "Allow traffic to any resources in the Engine security group for EMR Studio"
-        source_security_group_id = try(aws_security_group.engine[0].id, null)
+      engine = {
+        cidr_ipv4                           = null
+        cidr_ipv6                           = null
+        description                         = "Allow traffic to any resources in the Engine security group for EMR Studio"
+        from_port                           = 18888
+        ip_protocol                         = "tcp"
+        prefix_list_id                      = null
+        referenced_security_group_id        = null
+        referenced_engine_security_group_id = true
+        tags                                = {}
+        to_port                             = 18888
       }
-      https_egress = {
-        protocol    = "tcp"
-        from_port   = 443
-        to_port     = 443
-        description = "Allow traffic to the internet to link publicly hosted Git repositories to Workspaces"
-        cidr_blocks = ["0.0.0.0/0"]
+      https = {
+        cidr_ipv4                           = "0.0.0.0/0"
+        cidr_ipv6                           = null
+        description                         = "Allow traffic to the internet to link publicly hosted Git repositories to Workspaces"
+        from_port                           = 443
+        ip_protocol                         = "tcp"
+        prefix_list_id                      = null
+        referenced_security_group_id        = null
+        referenced_engine_security_group_id = false
+        tags                                = {}
+        to_port                             = 443
       }
     },
 
@@ -764,21 +803,46 @@ resource "aws_security_group" "workspace" {
   }
 }
 
-resource "aws_security_group_rule" "workspace" {
-  for_each = { for k, v in local.workspace_security_group_rules : k => v if local.create_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "workspace" {
+  for_each = { for k, v in var.workspace_security_group_ingress_rules : k => v if local.create_security_groups }
 
-  # Required
-  security_group_id = aws_security_group.workspace[0].id
-  protocol          = each.value.protocol
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = "egress"
+  region = var.region
 
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = lookup(each.value, "source_security_group_id", null)
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_engine_security_group_id ? aws_security_group.engine[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.workspace[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.workspace_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "workspace" {
+  for_each = { for k, v in local.workspace_security_group_egress_rules : k => v if local.create_security_groups }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_engine_security_group_id ? aws_security_group.engine[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.workspace[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.workspace_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }

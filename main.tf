@@ -163,7 +163,7 @@ resource "aws_emr_cluster" "this" {
   ebs_root_volume_size = var.ebs_root_volume_size
 
   dynamic "ec2_attributes" {
-    for_each = length(var.ec2_attributes) > 0 || local.create_managed_security_groups || local.create_iam_instance_profile ? [var.ec2_attributes] : []
+    for_each = var.ec2_attributes != null || local.create_managed_security_groups || local.create_iam_instance_profile ? [var.ec2_attributes] : []
 
     content {
       additional_master_security_groups = ec2_attributes.value.additional_master_security_groups
@@ -342,7 +342,8 @@ resource "aws_emr_cluster" "this" {
     aws_iam_role_policy_attachment.service_pass_role,
     aws_iam_role_policy_attachment.instance_profile,
     aws_iam_role_policy_attachment.autoscaling,
-    aws_security_group_rule.service
+    aws_vpc_security_group_ingress_rule.service,
+    aws_vpc_security_group_egress_rule.service,
   ]
 
   lifecycle {
@@ -762,20 +763,48 @@ resource "aws_security_group" "master" {
   }
 }
 
-resource "aws_security_group_rule" "master" {
-  for_each = { for k, v in var.master_security_group_rules : k => v if local.create_managed_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "master" {
+  for_each = { for k, v in var.master_security_group_ingress_rules : k => v if local.create_managed_security_groups }
 
-  description              = each.value.description
-  cidr_blocks              = each.value.cidr_blocks
-  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
-  prefix_list_ids          = each.value.prefix_list_ids
-  self                     = each.value.self
-  security_group_id        = aws_security_group.master[0].id
-  from_port                = each.value.from_port
-  to_port                  = each.value.to_port
-  type                     = each.value.type
-  protocol                 = each.value.protocol
-  source_security_group_id = each.value.source_slave_security_group ? aws_security_group.slave[0].id : lookup(each.value, "source_security_group_id", null)
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_slave_security_group ? aws_security_group.slave[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.master[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.master_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "master" {
+  for_each = { for k, v in var.master_security_group_egress_rules : k => v if local.create_managed_security_groups }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_slave_security_group ? aws_security_group.slave[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.master[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.master_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }
 
 ################################################################################
@@ -810,20 +839,48 @@ resource "aws_security_group" "slave" {
   }
 }
 
-resource "aws_security_group_rule" "slave" {
-  for_each = { for k, v in var.slave_security_group_rules : k => v if local.create_managed_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "slave" {
+  for_each = { for k, v in var.slave_security_group_ingress_rules : k => v if local.create_managed_security_groups }
 
-  description              = each.value.description
-  cidr_blocks              = each.value.cidr_blocks
-  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
-  prefix_list_ids          = each.value.prefix_list_ids
-  self                     = each.value.self
-  security_group_id        = aws_security_group.master[0].id
-  from_port                = each.value.from_port
-  to_port                  = each.value.to_port
-  type                     = each.value.type
-  protocol                 = each.value.protocol
-  source_security_group_id = each.value.source_master_security_group ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_master_security_group ? aws_security_group.master[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.slave[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "slave" {
+  for_each = { for k, v in var.slave_security_group_egress_rules : k => v if local.create_managed_security_groups }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_master_security_group ? aws_security_group.master[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.slave[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }
 
 ################################################################################
@@ -834,34 +891,52 @@ locals {
   create_service_security_group = local.create_managed_security_groups && var.is_private_cluster
   service_security_group_name   = "${local.managed_security_group_name}-service"
 
-  service_security_group_rules = merge(
+  service_security_group_ingress_rules = merge(
     {
-      "master_9443_ingress" = {
-        description              = "Master security group secure communication"
-        type                     = "ingress"
-        protocol                 = "tcp"
-        from_port                = 9443
-        to_port                  = 9443
-        source_security_group_id = try(aws_security_group.master[0].id, "")
-      }
-      "core_task_8443_egress" = {
-        description              = "Allow the cluster manager to communicate with the core and task nodes"
-        type                     = "egress"
-        protocol                 = "tcp"
-        from_port                = 8443
-        to_port                  = 8443
-        source_security_group_id = try(aws_security_group.slave[0].id, "")
-      }
-      "master_9443_egress" = {
-        description              = "Allow the cluster manager to communicate with the master nodes"
-        type                     = "egress"
-        protocol                 = "tcp"
-        from_port                = 8443
-        to_port                  = 8443
-        source_security_group_id = try(aws_security_group.master[0].id, "")
+      "master_9443" = {
+        cidr_ipv4                       = null
+        cidr_ipv6                       = null
+        description                     = "Master security group secure communication"
+        from_port                       = 9443
+        ip_protocol                     = "tcp"
+        prefix_list_id                  = null
+        reference_security_group_id     = null
+        reference_master_security_group = true
+        tags                            = {}
+        to_port                         = 9443
+
       }
     },
-    var.service_security_group_rules
+    var.service_security_group_ingress_rules
+  )
+  service_security_group_egress_rules = merge(
+    {
+      "core_task_8443" = {
+        cidr_ipv4                       = null
+        cidr_ipv6                       = null
+        description                     = "Allow the cluster manager to communicate with the core and task nodes"
+        from_port                       = 8443
+        ip_protocol                     = "tcp"
+        prefix_list_id                  = null
+        reference_security_group_id     = try(aws_security_group.slave[0].id, "")
+        reference_master_security_group = false
+        tags                            = {}
+        to_port                         = 8443
+      }
+      "master_8443" = {
+        cidr_ipv4                       = null
+        cidr_ipv6                       = null
+        description                     = "Allow the cluster manager to communicate with the masterk nodes"
+        from_port                       = 8443
+        ip_protocol                     = "tcp"
+        prefix_list_id                  = null
+        reference_security_group_id     = null
+        reference_master_security_group = true
+        tags                            = {}
+        to_port                         = 8443
+      }
+    },
+    var.service_security_group_egress_rules
   )
 }
 
@@ -889,18 +964,47 @@ resource "aws_security_group" "service" {
   }
 }
 
-resource "aws_security_group_rule" "service" {
-  for_each = { for k, v in local.service_security_group_rules : k => v if local.create_service_security_group }
 
-  description              = each.value.description
-  cidr_blocks              = each.value.cidr_blocks
-  ipv6_cidr_blocks         = each.value.ipv6_cidr_blocks
-  prefix_list_ids          = each.value.prefix_list_ids
-  self                     = each.value.self
-  security_group_id        = aws_security_group.master[0].id
-  from_port                = each.value.from_port
-  to_port                  = each.value.to_port
-  type                     = each.value.type
-  protocol                 = each.value.protocol
-  source_security_group_id = each.value.source_master_security_group ? aws_security_group.master[0].id : lookup(each.value, "source_security_group_id", null)
+resource "aws_vpc_security_group_ingress_rule" "service" {
+  for_each = { for k, v in local.service_security_group_ingress_rules : k => v if local.create_service_security_group }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_master_security_group ? aws_security_group.master[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.service[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.service_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "service" {
+  for_each = { for k, v in local.service_security_group_egress_rules : k => v if local.create_service_security_group }
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.reference_master_security_group ? aws_security_group.master[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.service[0].id
+  tags = merge(
+    var.tags,
+    var.managed_security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.service_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }

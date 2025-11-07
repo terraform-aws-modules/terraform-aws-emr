@@ -33,7 +33,12 @@ module "emr_serverless_spark" {
 
   name = "${local.name}-spark"
 
-  release_label_prefix = "emr-7"
+  release_label_filters = {
+    emr7 = {
+      prefix      = "emr-7"
+      application = "spark"
+    }
+  }
 
   initial_capacity = {
     driver = {
@@ -84,8 +89,14 @@ module "emr_serverless_hive" {
 
   name = "${local.name}-hive"
 
-  release_label_prefix = "emr-7"
-  type                 = "hive"
+  release_label_filters = {
+    emr7 = {
+      prefix      = "emr-7"
+      application = "hive"
+    }
+  }
+
+  type = "hive"
 
   initial_capacity = {
     driver = {

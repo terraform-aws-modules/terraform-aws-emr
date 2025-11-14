@@ -132,7 +132,7 @@ module "emr" {
   # Only the affected attributes are shown
 
   # Copy and paste from output to maintain backwards compatibility
-  # This was added by the AWS Redshift API and provider in v6.x
+  # This was added by the AWS EMR API and provider in v6.x
   os_release_label = "2023.9.20251014.0"
 
   bootstrap_action = [

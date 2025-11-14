@@ -127,7 +127,7 @@ module "emr" {
 ```hcl
 module "emr" {
   source  = "terraform-aws-modules/emr/aws"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   # Only the affected attributes are shown
 

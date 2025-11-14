@@ -511,7 +511,7 @@ resource "aws_emr_security_configuration" "this" {
 
 locals {
   # Autoscaling not supported when using instance fleets
-  create_autoscaling_iam_role = var.create && var.create_autoscaling_iam_role && (var.core_instance_fleet != null || var.master_instance_fleet != null) == 0
+  create_autoscaling_iam_role = var.create && var.create_autoscaling_iam_role && var.core_instance_fleet == null && var.master_instance_fleet == null
   autoscaling_iam_role_name   = coalesce(var.autoscaling_iam_role_name, "${var.name}-autoscaling")
 }
 
@@ -788,7 +788,7 @@ resource "aws_vpc_security_group_ingress_rule" "master" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
@@ -810,7 +810,7 @@ resource "aws_vpc_security_group_egress_rule" "master" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.master_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = each.value.to_port
@@ -864,7 +864,7 @@ resource "aws_vpc_security_group_ingress_rule" "slave" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
@@ -886,7 +886,7 @@ resource "aws_vpc_security_group_egress_rule" "slave" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.slave_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = each.value.to_port
@@ -903,6 +903,7 @@ locals {
   service_security_group_ingress_rules = merge(
     {
       "master_9443" = {
+        name                            = null
         cidr_ipv4                       = null
         cidr_ipv6                       = null
         description                     = "Master security group secure communication"
@@ -921,6 +922,7 @@ locals {
   service_security_group_egress_rules = merge(
     {
       "core_task_8443" = {
+        name                            = null
         cidr_ipv4                       = null
         cidr_ipv6                       = null
         description                     = "Allow the cluster manager to communicate with the core and task nodes"
@@ -933,6 +935,7 @@ locals {
         to_port                         = 8443
       }
       "master_8443" = {
+        name                            = null
         cidr_ipv4                       = null
         cidr_ipv6                       = null
         description                     = "Allow the cluster manager to communicate with the masterk nodes"
@@ -989,7 +992,7 @@ resource "aws_vpc_security_group_ingress_rule" "service" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
@@ -1011,7 +1014,7 @@ resource "aws_vpc_security_group_egress_rule" "service" {
   tags = merge(
     var.tags,
     var.managed_security_group_tags,
-    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}"), null) },
+    { Name = try(coalesce(each.value.name, "${local.service_security_group_name}-${each.key}")) },
     each.value.tags
   )
   to_port = each.value.to_port

@@ -88,6 +88,7 @@ If you find a bug, please open an issue with supporting configuration to reprodu
       - None
 
     - `virtual_cluster` sub-module
+      - None
 
 6. Added outputs:
 
@@ -98,24 +99,101 @@ If you find a bug, please open an issue with supporting configuration to reprodu
       - None
 
     - `virtual_cluster` sub-module
+      - None
 
-## Upgrade Migrations
+## Upgrade Migration
 
-Not applicable - there aren't any structural changes other than the security group rule changes noted above. A diff of before vs after would look identical.
+### Before v2.x Example
+
+```hcl
+module "emr" {
+  source  = "terraform-aws-modules/emr/aws"
+  version = "~> 2.0"
+
+  # Only the affected attributes are shown
+
+  bootstrap_action = {
+    example = {
+      name = "Just an example",
+      path = "file:/bin/echo",
+      args = ["Hello World!"]
+    }
+  }
+}
+```
+
+### After v3.x Example
+
+```hcl
+module "emr" {
+  source  = "terraform-aws-modules/emr/aws"
+  version = "~> 2.0"
+
+  # Only the affected attributes are shown
+
+  # Copy and paste from output to maintain backwards compatibility
+  # This was added by the AWS Redshift API and provider in v6.x
+  os_release_label = "2023.9.20251014.0"
+
+  bootstrap_action = [
+    {
+      name = "Just an example",
+      path = "file:/bin/echo",
+      args = ["Hello World!"]
+    }
+  ]
+}
+```
 
 ### State Changes
 
 Due to the change from `aws_security_group_rule` to `aws_vpc_security_group_ingress_rule` and `aws_vpc_security_group_egress_rule`, the following reference state changes are required to maintain the current security group rules. (Note: these are different resources so they cannot be moved with `terraform mv ...`)
 
-```sh
-terraform state rm 'module.emr_instance_group.aws_security_group_rule.slave["default"]'
-terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.this["default"]' 'sg-xxx'
+#### Instance Group
 
+```sh
+# Master Security Group
 terraform state rm 'module.emr_instance_group.aws_security_group_rule.master["default"]'
-terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.this["default"]' 'sg-xxx'
+terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.master["all-traffic"]' 'sg-xxx'
+
+# Slave Security Group
+terraform state rm 'module.emr_instance_group.aws_security_group_rule.slave["default"]'
+terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.slave["all-traffic"]' 'sg-xxx'
+
+# Service Security Group
+terraform state rm 'module.emr_instance_group.aws_security_group_rule.service["master_9443_ingress"]'
+terraform state import 'module.emr_instance_group.aws_vpc_security_group_ingress_rule.service["master_9443"]' 'sg-xxx'
+
+terraform state rm 'module.emr_instance_group.aws_security_group_rule.service["master_9443_egress"]'
+terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.service["master_8443"]' 'sg-xxx'
+
+terraform state rm 'module.emr_instance_group.aws_security_group_rule.service["core_task_8443_egress"]'
+terraform state import 'module.emr_instance_group.aws_vpc_security_group_egress_rule.service["core_task_8443"]' 'sg-xxx'
 ```
 
-Serverless sub-module
+#### Instance Fleet
+
+```sh
+# Master Security Group
+terraform state rm 'module.emr_instance_fleet.aws_security_group_rule.master["default"]'
+terraform state import 'module.emr_instance_fleet.aws_vpc_security_group_egress_rule.master["all-traffic"]' 'sg-xxx'
+
+# Slave Security Group
+terraform state rm 'module.emr_instance_fleet.aws_security_group_rule.slave["default"]'
+terraform state import 'module.emr_instance_fleet.aws_vpc_security_group_egress_rule.slave["all-traffic"]' 'sg-xxx'
+
+# Service Security Group
+terraform state rm 'module.emr_instance_fleet.aws_security_group_rule.service["master_9443_ingress"]'
+terraform state import 'module.emr_instance_fleet.aws_vpc_security_group_ingress_rule.service["master_9443"]' 'sg-xxx'
+
+terraform state rm 'module.emr_instance_fleet.aws_security_group_rule.service["master_9443_egress"]'
+terraform state import 'module.emr_instance_fleet.aws_vpc_security_group_egress_rule.service["master_8443"]' 'sg-xxx'
+
+terraform state rm 'module.emr_instance_fleet.aws_security_group_rule.service["core_task_8443_egress"]'
+terraform state import 'module.emr_instance_fleet.aws_vpc_security_group_egress_rule.service["core_task_8443"]' 'sg-xxx'
+```
+
+#### Serverless sub-module
 
 ```sh
 terraform state rm 'module.emr_serverless_spark.aws_security_group_rule.this["egress_all"]'

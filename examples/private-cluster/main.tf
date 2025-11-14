@@ -33,7 +33,6 @@ locals {
 module "emr_instance_fleet" {
   source = "../.."
 
-  # create = false
   name = "${local.name}-instance-fleet"
 
   release_label_filters = {
@@ -43,7 +42,7 @@ module "emr_instance_fleet" {
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
   bootstrap_action = [
@@ -177,7 +176,7 @@ module "emr_instance_group" {
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
   bootstrap_action = [

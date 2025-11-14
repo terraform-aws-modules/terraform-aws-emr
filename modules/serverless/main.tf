@@ -7,7 +7,7 @@ data "aws_emr_release_labels" "this" {
     for_each = var.release_label_filters
 
     content {
-      application = try(coalesce(filters.value.application, var.type))
+      application = filters.value.application
       prefix      = filters.value.prefix
     }
   }
@@ -109,7 +109,7 @@ resource "aws_emrserverless_application" "this" {
     }
   }
 
-  release_label = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)), "")
+  release_label = try(coalesce(var.release_label, element(data.aws_emr_release_labels.this[0].release_labels, 0)))
 
   dynamic "monitoring_configuration" {
     for_each = var.monitoring_configuration != null ? [var.monitoring_configuration] : []

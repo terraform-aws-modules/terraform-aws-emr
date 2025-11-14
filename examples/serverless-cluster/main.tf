@@ -35,8 +35,7 @@ module "emr_serverless_spark" {
 
   release_label_filters = {
     emr7 = {
-      prefix      = "emr-7"
-      application = "spark"
+      prefix = "emr-7"
     }
   }
 
@@ -91,8 +90,7 @@ module "emr_serverless_hive" {
 
   release_label_filters = {
     emr7 = {
-      prefix      = "emr-7"
-      application = "hive"
+      prefix = "emr-7"
     }
   }
 

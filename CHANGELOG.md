@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.3...v3.0.0) (2025-11-14)
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade AWS provider and min required Terraform version to `6.19` and `1.5.7` respectively (#45)
+
+### Features
+
+* Upgrade AWS provider and min required Terraform version to `6.19` and `1.5.7` respectively ([#45](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/45)) ([a674683](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/a674683e6f46bb21a1d503198eb2f6897912e7a1))
+
 ## [2.4.3](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.2...v2.4.3) (2025-10-21)
 
 ### Bug Fixes

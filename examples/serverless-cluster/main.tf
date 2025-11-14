@@ -2,7 +2,13 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
@@ -27,7 +33,11 @@ module "emr_serverless_spark" {
 
   name = "${local.name}-spark"
 
-  release_label_prefix = "emr-6"
+  release_label_filters = {
+    emr7 = {
+      prefix = "emr-7"
+    }
+  }
 
   initial_capacity = {
     driver = {
@@ -65,15 +75,6 @@ module "emr_serverless_spark" {
     subnet_ids = module.vpc.private_subnets
   }
 
-  security_group_rules = {
-    egress_all = {
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-
   interactive_configuration = {
     livy_endpoint_enabled = true
     studio_enabled        = true
@@ -87,8 +88,13 @@ module "emr_serverless_hive" {
 
   name = "${local.name}-hive"
 
-  release_label_prefix = "emr-6"
-  type                 = "hive"
+  release_label_filters = {
+    emr7 = {
+      prefix = "emr-7"
+    }
+  }
+
+  type = "hive"
 
   initial_capacity = {
     driver = {

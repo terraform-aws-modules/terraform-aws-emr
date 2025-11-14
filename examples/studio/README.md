@@ -11,9 +11,9 @@ Configuration in this directory creates:
 To run this example you need to execute:
 
 ```bash
-$ terraform init
-$ terraform plan
-$ terraform apply
+terraform init
+terraform plan
+terraform apply
 ```
 
 <!-- BEGIN_TF_DOCS -->
@@ -22,13 +22,13 @@ $ terraform apply
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
 
 ## Modules
 

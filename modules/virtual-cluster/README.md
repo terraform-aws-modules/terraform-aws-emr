@@ -12,6 +12,9 @@ See [`examples`](https://github.com/terraform-aws-modules/terraform-aws-emr/tree
 module "emr_virtual_cluster" {
   source = "terraform-aws-modules/emr/aws//modules/virtual-cluster"
 
+  eks_cluster_name      = "example"
+  eks_oidc_provider_arn = "arn:aws:iam::0123456789:oidc-provider/eks-example"
+
   name             = "emr-custom"
   create_namespace = true
   namespace        = "emr-custom"
@@ -41,6 +44,9 @@ module "emr_virtual_cluster" {
 module "emr_virtual_cluster" {
   source = "terraform-aws-modules/emr/aws//modules/virtual-cluster"
 
+  eks_cluster_name      = "example"
+  eks_oidc_provider_arn = "arn:aws:iam::0123456789:oidc-provider/eks-example"
+
   name      = "emr-default"
   namespace = "emr-default"
 
@@ -66,16 +72,16 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.83 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.10 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.38 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.83 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.10 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | >= 2.38 |
 
 ## Modules
 
@@ -104,6 +110,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_annotations"></a> [annotations](#input\_annotations) | A map of annotations to add to all Kubernetes resources | `map(string)` | `{}` | no |
 | <a name="input_cloudwatch_log_group_arn"></a> [cloudwatch\_log\_group\_arn](#input\_cloudwatch\_log\_group\_arn) | ARN of the log group to use for the cluster logs | `string` | `"arn:aws:logs:*:*:*"` | no |
+| <a name="input_cloudwatch_log_group_class"></a> [cloudwatch\_log\_group\_class](#input\_cloudwatch\_log\_group\_class) | Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS` | `string` | `null` | no |
 | <a name="input_cloudwatch_log_group_kms_key_id"></a> [cloudwatch\_log\_group\_kms\_key\_id](#input\_cloudwatch\_log\_group\_kms\_key\_id) | If a KMS Key ARN is set, this key will be used to encrypt the corresponding log group. Please be sure that the KMS Key has an appropriate key policy (https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html) | `string` | `null` | no |
 | <a name="input_cloudwatch_log_group_name"></a> [cloudwatch\_log\_group\_name](#input\_cloudwatch\_log\_group\_name) | The name of the log group. If a name is not provided, the default name format used is: `/emr-on-eks-logs/emr-workload/<NAMESPACE>` | `string` | `null` | no |
 | <a name="input_cloudwatch_log_group_retention_in_days"></a> [cloudwatch\_log\_group\_retention\_in\_days](#input\_cloudwatch\_log\_group\_retention\_in\_days) | Number of days to retain log events. Default retention - 7 days | `number` | `7` | no |
@@ -114,8 +121,9 @@ No modules.
 | <a name="input_create_iam_role"></a> [create\_iam\_role](#input\_create\_iam\_role) | Determines whether an IAM role is created for EMR on EKS job execution role | `bool` | `true` | no |
 | <a name="input_create_kubernetes_role"></a> [create\_kubernetes\_role](#input\_create\_kubernetes\_role) | Determines whether a Kubernetes role is created for EMR on EKS | `bool` | `true` | no |
 | <a name="input_create_namespace"></a> [create\_namespace](#input\_create\_namespace) | Determines whether a Kubernetes namespace is created for EMR on EKS | `bool` | `true` | no |
-| <a name="input_eks_cluster_id"></a> [eks\_cluster\_id](#input\_eks\_cluster\_id) | EKS cluster ID | `string` | `""` | no |
-| <a name="input_iam_role_additional_policies"></a> [iam\_role\_additional\_policies](#input\_iam\_role\_additional\_policies) | Additional policies to be added to the job execution IAM role | `any` | `{}` | no |
+| <a name="input_eks_cluster_name"></a> [eks\_cluster\_name](#input\_eks\_cluster\_name) | EKS cluster name | `string` | `""` | no |
+| <a name="input_eks_oidc_provider_arn"></a> [eks\_oidc\_provider\_arn](#input\_eks\_oidc\_provider\_arn) | OIDC provider ARN for the EKS cluster | `string` | `""` | no |
+| <a name="input_iam_role_additional_policies"></a> [iam\_role\_additional\_policies](#input\_iam\_role\_additional\_policies) | Additional policies to be added to the job execution IAM role | `map(string)` | `{}` | no |
 | <a name="input_iam_role_description"></a> [iam\_role\_description](#input\_iam\_role\_description) | Description of the job execution role | `string` | `null` | no |
 | <a name="input_iam_role_path"></a> [iam\_role\_path](#input\_iam\_role\_path) | Job execution IAM role path | `string` | `null` | no |
 | <a name="input_iam_role_permissions_boundary"></a> [iam\_role\_permissions\_boundary](#input\_iam\_role\_permissions\_boundary) | ARN of the policy that is used to set the permissions boundary for the job execution IAM role | `string` | `null` | no |
@@ -123,7 +131,7 @@ No modules.
 | <a name="input_labels"></a> [labels](#input\_labels) | A map of labels to add to all Kubernetes resources | `map(string)` | `{}` | no |
 | <a name="input_name"></a> [name](#input\_name) | Name of the EMR on EKS virtual cluster | `string` | `""` | no |
 | <a name="input_namespace"></a> [namespace](#input\_namespace) | Kubernetes namespace for EMR on EKS | `string` | `"emr-containers"` | no |
-| <a name="input_oidc_provider_arn"></a> [oidc\_provider\_arn](#input\_oidc\_provider\_arn) | OIDC provider ARN for the EKS cluster | `string` | `""` | no |
+| <a name="input_region"></a> [region](#input\_region) | Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration | `string` | `null` | no |
 | <a name="input_role_name"></a> [role\_name](#input\_role\_name) | Name to use on IAM role created for EMR on EKS job execution role as well as Kubernetes RBAC role | `string` | `null` | no |
 | <a name="input_s3_bucket_arns"></a> [s3\_bucket\_arns](#input\_s3\_bucket\_arns) | S3 bucket ARNs for EMR on EKS job execution role to list, get objects, and put objects | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | A map of tags to add to all resources | `map(string)` | `{}` | no |

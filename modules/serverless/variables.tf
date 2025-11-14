@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -22,38 +28,62 @@ variable "architecture" {
 
 variable "auto_start_configuration" {
   description = "The configuration for an application to automatically start on job submission"
-  type        = any
-  default     = {}
+  type = object({
+    enabled = optional(bool)
+  })
+  default = null
 }
 
 variable "auto_stop_configuration" {
   description = "The configuration for an application to automatically stop after a certain amount of time being idle"
-  type        = any
-  default     = {}
+  type = object({
+    enabled              = optional(bool)
+    idle_timeout_minutes = optional(number)
+  })
+  default = null
 }
 
 variable "image_configuration" {
   description = "The image configuration applied to all worker types"
-  type        = any
-  default     = {}
+  type = object({
+    image_uri = string
+  })
+  default = null
 }
 
 variable "initial_capacity" {
   description = "The capacity to initialize when the application is created"
-  type        = any
-  default     = {}
+  type = map(object({
+    initial_capacity_config = optional(object({
+      worker_configuration = optional(object({
+        cpu    = string
+        disk   = optional(string)
+        memory = string
+      }))
+      worker_count = optional(number, 1)
+    }))
+    initial_capacity_type = string
+  }))
+  default = null
 }
 
 variable "interactive_configuration" {
   description = "Enables the interactive use cases to use when running an application"
-  type        = any
-  default     = {}
+  type = object({
+    livy_endpoint_enabled = optional(bool)
+    studio_enabled        = optional(bool)
+  })
+  default = null
 }
 
 variable "maximum_capacity" {
   description = "The maximum capacity to allocate when the application is created. This is cumulative across all workers at any given point in time, not just when an application is created. No new resources will be created once any one of the defined limits is hit"
-  type        = any
-  default     = {}
+  type = object({
+    cpu    = string
+    disk   = optional(string)
+    memory = string
+  })
+  default = null
 }
 
 variable "name" {
@@ -64,8 +94,11 @@ variable "name" {
 
 variable "network_configuration" {
   description = "The network configuration for customer VPC connectivity"
-  type        = any
-  default     = {}
+  type = object({
+    security_group_ids = optional(list(string), [])
+    subnet_ids         = optional(list(string))
+  })
+  default = null
 }
 
 variable "release_label" {
@@ -74,10 +107,64 @@ variable "release_label" {
   default     = null
 }
 
-variable "release_label_prefix" {
-  description = "Release label prefix used to lookup a release label"
-  type        = string
-  default     = "emr-6"
+variable "release_label_filters" {
+  description = "Map of release label filters use to lookup a release label"
+  type = map(object({
+    application = optional(string)
+    prefix      = optional(string)
+  }))
+  default = {
+    default = {
+      # application = "spark@3"
+      prefix = "emr-7"
+    }
+  }
+}
+
+variable "monitoring_configuration" {
+  description = "The monitoring configuration for the application"
+  type = object({
+    cloudwatch_logging_configuration = optional(object({
+      enabled                = optional(bool)
+      log_group_name         = optional(string)
+      log_stream_name_prefix = optional(string)
+      encryption_key_arn     = optional(string)
+      log_types = optional(list(object({
+        name   = string
+        values = list(string)
+      })))
+    }))
+    managed_persistence_monitoring_configuration = optional(object({
+      enabled            = optional(bool)
+      encryption_key_arn = optional(string)
+    }))
+    prometheus_monitoring_configuration = optional(object({
+      remote_write_url = optional(string)
+    }))
+    s3_monitoring_configuration = optional(object({
+      log_uri            = optional(string)
+      encryption_key_arn = optional(string)
+    }))
+  })
+  default = null
+}
+
+variable "runtime_configuration" {
+  description = "The runtime configuration for the application"
+  type = list(object({
+    classification = string
+    properties     = optional(map(string))
+  }))
+  default = null
+}
+
+variable "scheduler_configuration" {
+  description = "The scheduler configuration for the application"
+  type = object({
+    max_concurrent_runs   = optional(number)
+    queue_timeout_minutes = optional(number)
+  })
+  default = null
 }
 
 variable "type" {
@@ -120,8 +207,44 @@ variable "security_group_tags" {
   default     = {}
 }
 
-variable "security_group_rules" {
-  description = "Security group rules to add to the security group created"
-  type        = any
-  default     = {}
+variable "security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                    = optional(string)
+    cidr_ipv6                    = optional(string)
+    description                  = optional(string)
+    from_port                    = optional(string)
+    ip_protocol                  = optional(string, "tcp")
+    prefix_list_id               = optional(string)
+    referenced_security_group_id = optional(string)
+    tags                         = optional(map(string), {})
+    to_port                      = optional(string)
+  }))
+  default = null
+}
+
+variable "security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                    = optional(string)
+    cidr_ipv6                    = optional(string)
+    description                  = optional(string)
+    from_port                    = optional(string)
+    ip_protocol                  = optional(string, "tcp")
+    prefix_list_id               = optional(string)
+    referenced_security_group_id = optional(string)
+    tags                         = optional(map(string), {})
+    to_port                      = optional(string)
+  }))
+  default = {
+    "all-traffic" = {
+      description = "Allow all egress traffic"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
 }

@@ -14,7 +14,13 @@ provider "kubernetes" {
   }
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 
 locals {
   name   = "virtual-emr"
@@ -37,8 +43,8 @@ locals {
 module "complete" {
   source = "../../modules/virtual-cluster"
 
-  eks_cluster_id    = module.eks.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
+  eks_cluster_name      = module.eks.cluster_name
+  eks_oidc_provider_arn = module.eks.oidc_provider_arn
 
   name             = "emr-custom"
   create_namespace = true
@@ -53,7 +59,7 @@ module "complete" {
   iam_role_path                 = "/"
   iam_role_description          = "EMR custom Role"
   iam_role_permissions_boundary = null
-  iam_role_additional_policies  = []
+  iam_role_additional_policies  = {}
 
   tags = local.tags
 }
@@ -61,8 +67,8 @@ module "complete" {
 module "default" {
   source = "../../modules/virtual-cluster"
 
-  eks_cluster_id    = module.eks.cluster_name
-  oidc_provider_arn = module.eks.oidc_provider_arn
+  eks_cluster_name      = module.eks.cluster_name
+  eks_oidc_provider_arn = module.eks.oidc_provider_arn
 
   s3_bucket_arns = [
     module.s3_bucket.s3_bucket_arn,
@@ -113,7 +119,7 @@ resource "null_resource" "start_job_run" {
       --virtual-cluster-id ${module.complete.virtual_cluster_id} \
       --name ${local.name}-example \
       --execution-role-arn ${module.complete.job_execution_role_arn} \
-      --release-label emr-6.8.0-latest \
+      --release-label emr-7.9.0-latest \
       --job-driver '{
           "sparkSubmitJobDriver": {
               "entryPoint": "s3://${module.s3_bucket.s3_bucket_id}/emr-eks-workshop/scripts/pi.py",
@@ -153,6 +159,9 @@ module "eks" {
   endpoint_public_access = true
 
   enable_cluster_creator_admin_permissions = true
+
+  # Required for now until https://github.com/aws/containers-roadmap/issues/2397
+  enable_irsa = true
 
   compute_config = {
     enabled    = true
@@ -198,8 +207,7 @@ module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "~> 6.0"
 
-  vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.vpc_endpoints_sg.security_group_id]
+  vpc_id = module.vpc.vpc_id
 
   endpoints = merge({
     s3 = {
@@ -221,24 +229,14 @@ module "vpc_endpoints" {
       }
   })
 
-  tags = local.tags
-}
-
-module "vpc_endpoints_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
-
-  name        = "${local.name}-vpc-endpoints"
-  description = "Security group for VPC endpoint access"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      rule        = "https-443-tcp"
-      description = "VPC CIDR HTTPS"
-      cidr_blocks = join(",", module.vpc.private_subnets_cidr_blocks)
-    },
-  ]
+  # Security group
+  create_security_group = true
+  security_group_rules = {
+    ingress_https = {
+      description = "HTTPS from private subnets"
+      cidr_blocks = module.vpc.private_subnets_cidr_blocks
+    }
+  }
 
   tags = local.tags
 }

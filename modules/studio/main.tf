@@ -1,11 +1,29 @@
-data "aws_region" "current" {}
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "current" {
+  count = var.create ? 1 : 0
+
+  region = var.region
+}
+
+data "aws_partition" "current" {
+  count = var.create ? 1 : 0
+}
+
+data "aws_caller_identity" "current" {
+  count = var.create ? 1 : 0
+}
+
+data "aws_service_principal" "elasticmapreduce" {
+  count = var.create ? 1 : 0
+
+  service_name = "elasticmapreduce"
+}
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
-  partition  = data.aws_partition.current.partition
-  region     = data.aws_region.current.name
+  region     = try(data.aws_region.current[0].region, "")
+  partition  = try(data.aws_partition.current[0].partition, "")
+  account_id = try(data.aws_caller_identity.current[0].account_id, "")
+
+  elasticmapreduce_sp_name = try(data.aws_service_principal.elasticmapreduce[0].name, "")
 
   auth_mode_is_sso = var.auth_mode == "SSO"
 
@@ -18,6 +36,8 @@ locals {
 
 resource "aws_emr_studio" "this" {
   count = var.create ? 1 : 0
+
+  region = var.region
 
   auth_mode                      = var.auth_mode
   default_s3_location            = var.default_s3_location
@@ -71,7 +91,7 @@ data "aws_iam_policy_document" "service_assume" {
 
     principals {
       type        = "Service"
-      identifiers = ["elasticmapreduce.${data.aws_partition.current.dns_suffix}"]
+      identifiers = [local.elasticmapreduce_sp_name]
     }
 
     condition {
@@ -298,18 +318,18 @@ data "aws_iam_policy_document" "service" {
   }
 
   dynamic "statement" {
-    for_each = var.service_role_statements
+    for_each = var.service_role_statements != null ? var.service_role_statements : {}
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = try(coalesce(statement.value.sid, statement.key))
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -318,7 +338,7 @@ data "aws_iam_policy_document" "service" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -327,7 +347,7 @@ data "aws_iam_policy_document" "service" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test
@@ -371,12 +391,14 @@ resource "aws_iam_role_policy_attachment" "service_additional" {
 ################################################################################
 
 resource "aws_emr_studio_session_mapping" "this" {
-  for_each = { for k, v in var.session_mappings : k => v if var.create && local.auth_mode_is_sso }
+  for_each = var.session_mappings != null && var.create && local.auth_mode_is_sso ? var.session_mappings : {}
 
-  identity_id        = try(each.value.identity_id, null)
-  identity_name      = try(each.value.identity_name, null)
+  region = var.region
+
+  identity_id        = each.value.identity_id
+  identity_name      = each.value.identity_name
   identity_type      = each.value.identity_type
-  session_policy_arn = try(each.value.session_policy_arn, aws_iam_policy.user[0].arn)
+  session_policy_arn = try(coalesce(each.value.session_policy_arn, aws_iam_policy.user[0].arn))
   studio_id          = aws_emr_studio.this[0].id
 }
 
@@ -414,7 +436,7 @@ data "aws_iam_policy_document" "user_assume" {
 
     principals {
       type        = "Service"
-      identifiers = ["elasticmapreduce.${data.aws_partition.current.dns_suffix}"]
+      identifiers = [local.elasticmapreduce_sp_name]
     }
   }
 }
@@ -593,18 +615,18 @@ data "aws_iam_policy_document" "user" {
   }
 
   dynamic "statement" {
-    for_each = var.user_role_statements
+    for_each = var.user_role_statements != null ? var.user_role_statements : {}
 
     content {
-      sid           = try(statement.value.sid, null)
-      actions       = try(statement.value.actions, null)
-      not_actions   = try(statement.value.not_actions, null)
-      effect        = try(statement.value.effect, null)
-      resources     = try(statement.value.resources, null)
-      not_resources = try(statement.value.not_resources, null)
+      sid           = try(coalesce(statement.value.sid, statement.key))
+      actions       = statement.value.actions
+      not_actions   = statement.value.not_actions
+      effect        = statement.value.effect
+      resources     = statement.value.resources
+      not_resources = statement.value.not_resources
 
       dynamic "principals" {
-        for_each = try(statement.value.principals, [])
+        for_each = statement.value.principals != null ? statement.value.principals : []
 
         content {
           type        = principals.value.type
@@ -613,7 +635,7 @@ data "aws_iam_policy_document" "user" {
       }
 
       dynamic "not_principals" {
-        for_each = try(statement.value.not_principals, [])
+        for_each = statement.value.not_principals != null ? statement.value.not_principals : []
 
         content {
           type        = not_principals.value.type
@@ -622,7 +644,7 @@ data "aws_iam_policy_document" "user" {
       }
 
       dynamic "condition" {
-        for_each = try(statement.value.conditions, [])
+        for_each = statement.value.condition != null ? statement.value.condition : []
 
         content {
           test     = condition.value.test
@@ -663,16 +685,20 @@ locals {
   security_group_name    = try(coalesce(var.security_group_name, var.name), "")
 
   engine_security_group_name = "${local.security_group_name}-engine"
-  engine_security_group_rules = { for k, v in merge(
-    var.engine_security_group_rules,
+  engine_security_group_ingress_rules = { for k, v in merge(
+    var.engine_security_group_ingress_rules,
     {
-      workspace_ingress = {
-        protocol                 = "tcp"
-        from_port                = 18888
-        to_port                  = 18888
-        type                     = "ingress"
-        description              = "Allow traffic from any resources in the Workspace security group for EMR Studio"
-        source_security_group_id = try(aws_security_group.workspace[0].id, null)
+      workspace = {
+        cidr_ipv4                              = null
+        cidr_ipv6                              = null
+        description                            = "Allow traffic from any resources in the Workspace security group for EMR Studio"
+        from_port                              = 18888
+        ip_protocol                            = "tcp"
+        prefix_list_id                         = null
+        referenced_security_group_id           = null
+        referenced_workspace_security_group_id = true
+        tags                                   = {}
+        to_port                                = 18888
       }
     },
 
@@ -698,23 +724,48 @@ resource "aws_security_group" "engine" {
   }
 }
 
-resource "aws_security_group_rule" "engine" {
-  for_each = { for k, v in local.engine_security_group_rules : k => v if local.create_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "engine" {
+  for_each = local.engine_security_group_ingress_rules != null && local.create_security_groups ? local.engine_security_group_ingress_rules : {}
 
-  # Required
-  security_group_id = aws_security_group.engine[0].id
-  protocol          = try(each.value.protocol, "tcp")
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = try(each.value.type, "egress")
+  region = var.region
 
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = lookup(each.value, "source_security_group_id", null)
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_workspace_security_group_id ? aws_security_group.workspace[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.engine[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.engine_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "engine" {
+  for_each = var.engine_security_group_egress_rules != null && local.create_security_groups ? var.engine_security_group_egress_rules : {}
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_workspace_security_group_id ? aws_security_group.workspace[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.engine[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.engine_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }
 
 ################################################################################
@@ -723,22 +774,32 @@ resource "aws_security_group_rule" "engine" {
 
 locals {
   workspace_security_group_name = "${local.security_group_name}-workspace"
-  workspace_security_group_rules = { for k, v in merge(
-    var.workspace_security_group_rules,
+  workspace_security_group_egress_rules = { for k, v in merge(
+    var.workspace_security_group_egress_rules,
     {
-      engine_egress = {
-        protocol                 = "tcp"
-        from_port                = 18888
-        to_port                  = 18888
-        description              = "Allow traffic to any resources in the Engine security group for EMR Studio"
-        source_security_group_id = try(aws_security_group.engine[0].id, null)
+      engine = {
+        cidr_ipv4                           = null
+        cidr_ipv6                           = null
+        description                         = "Allow traffic to any resources in the Engine security group for EMR Studio"
+        from_port                           = 18888
+        ip_protocol                         = "tcp"
+        prefix_list_id                      = null
+        referenced_security_group_id        = null
+        referenced_engine_security_group_id = true
+        tags                                = {}
+        to_port                             = 18888
       }
-      https_egress = {
-        protocol    = "tcp"
-        from_port   = 443
-        to_port     = 443
-        description = "Allow traffic to the internet to link publicly hosted Git repositories to Workspaces"
-        cidr_blocks = ["0.0.0.0/0"]
+      https = {
+        cidr_ipv4                           = "0.0.0.0/0"
+        cidr_ipv6                           = null
+        description                         = "Allow traffic to the internet to link publicly hosted Git repositories to Workspaces"
+        from_port                           = 443
+        ip_protocol                         = "tcp"
+        prefix_list_id                      = null
+        referenced_security_group_id        = null
+        referenced_engine_security_group_id = false
+        tags                                = {}
+        to_port                             = 443
       }
     },
 
@@ -764,21 +825,46 @@ resource "aws_security_group" "workspace" {
   }
 }
 
-resource "aws_security_group_rule" "workspace" {
-  for_each = { for k, v in local.workspace_security_group_rules : k => v if local.create_security_groups }
+resource "aws_vpc_security_group_ingress_rule" "workspace" {
+  for_each = var.workspace_security_group_ingress_rules != null && local.create_security_groups ? var.workspace_security_group_ingress_rules : {}
 
-  # Required
-  security_group_id = aws_security_group.workspace[0].id
-  protocol          = each.value.protocol
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  type              = "egress"
+  region = var.region
 
-  # Optional
-  description              = lookup(each.value, "description", null)
-  cidr_blocks              = lookup(each.value, "cidr_blocks", null)
-  ipv6_cidr_blocks         = lookup(each.value, "ipv6_cidr_blocks", null)
-  prefix_list_ids          = lookup(each.value, "prefix_list_ids", null)
-  self                     = lookup(each.value, "self", null)
-  source_security_group_id = lookup(each.value, "source_security_group_id", null)
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = each.value.from_port
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_engine_security_group_id ? aws_security_group.engine[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.workspace[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.workspace_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = try(coalesce(each.value.to_port, each.value.from_port), null)
+}
+
+resource "aws_vpc_security_group_egress_rule" "workspace" {
+  for_each = local.workspace_security_group_egress_rules != null && local.create_security_groups ? local.workspace_security_group_egress_rules : {}
+
+  region = var.region
+
+  cidr_ipv4                    = each.value.cidr_ipv4
+  cidr_ipv6                    = each.value.cidr_ipv6
+  description                  = each.value.description
+  from_port                    = try(coalesce(each.value.from_port, each.value.to_port), null)
+  ip_protocol                  = each.value.ip_protocol
+  prefix_list_id               = each.value.prefix_list_id
+  referenced_security_group_id = each.value.referenced_engine_security_group_id ? aws_security_group.engine[0].id : each.value.referenced_security_group_id
+  security_group_id            = aws_security_group.workspace[0].id
+  tags = merge(
+    var.tags,
+    var.security_group_tags,
+    { "Name" = coalesce(each.value.name, "${local.workspace_security_group_name}-${each.key}") },
+    each.value.tags
+  )
+  to_port = each.value.to_port
 }

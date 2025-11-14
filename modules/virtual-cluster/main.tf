@@ -1,7 +1,9 @@
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+  count = var.create ? 1 : 0
+}
 
 locals {
-  account_id = data.aws_caller_identity.current.account_id
+  account_id = try(data.aws_caller_identity.current[0].account_id, "")
 
   internal_role_name = try(coalesce(var.role_name, var.name), "")
 
@@ -19,10 +21,12 @@ locals {
 resource "aws_emrcontainers_virtual_cluster" "this" {
   count = var.create ? 1 : 0
 
+  region = var.region
+
   name = var.name
 
   container_provider {
-    id   = var.eks_cluster_id
+    id   = var.eks_cluster_name
     type = "EKS"
 
     info {
@@ -145,6 +149,9 @@ locals {
 data "aws_iam_policy_document" "assume" {
   count = local.create_iam_role ? 1 : 0
 
+
+  # IRSA is default and only supported authentication method for now until wildcard support is added
+  # to EKS pod identity https://github.com/aws/containers-roadmap/issues/2397
   statement {
     sid     = "IRSA"
     effect  = "Allow"
@@ -152,12 +159,12 @@ data "aws_iam_policy_document" "assume" {
 
     principals {
       type        = "Federated"
-      identifiers = [var.oidc_provider_arn]
+      identifiers = [var.eks_oidc_provider_arn]
     }
 
     condition {
       test     = "StringLike"
-      variable = "${replace(var.oidc_provider_arn, "/^(.*provider/)/", "")}:sub"
+      variable = "${replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")}:sub"
       # Terraform lacks support for a base32 function and role names with prefixes are unknown so a wildcard is used
       values = ["system:serviceaccount:${local.namespace}:emr-containers-sa-*-*-${local.account_id}-*"]
     }
@@ -165,7 +172,7 @@ data "aws_iam_policy_document" "assume" {
     # https://aws.amazon.com/premiumsupport/knowledge-center/eks-troubleshoot-oidc-and-irsa/?nc1=h_ls
     condition {
       test     = "StringEquals"
-      variable = "${replace(var.oidc_provider_arn, "/^(.*provider/)/", "")}:aud"
+      variable = "${replace(var.eks_oidc_provider_arn, "/^(.*provider/)/", "")}:aud"
       values   = ["sts.amazonaws.com"]
     }
   }
@@ -258,10 +265,13 @@ resource "aws_iam_role_policy_attachment" "additional" {
 resource "aws_cloudwatch_log_group" "this" {
   count = var.create && var.create_cloudwatch_log_group ? 1 : 0
 
+  region = var.region
+
   name              = var.cloudwatch_log_group_use_name_prefix ? null : local.cloudwatch_log_group_name
   name_prefix       = var.cloudwatch_log_group_use_name_prefix ? "${local.cloudwatch_log_group_name}-" : null
   retention_in_days = var.cloudwatch_log_group_retention_in_days
   kms_key_id        = var.cloudwatch_log_group_kms_key_id
+  log_group_class   = var.cloudwatch_log_group_class
   skip_destroy      = var.cloudwatch_log_group_skip_destroy
 
   tags = local.tags

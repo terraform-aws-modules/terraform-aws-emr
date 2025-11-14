@@ -2,8 +2,14 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
-data "aws_partition" "current" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {
@@ -27,26 +33,25 @@ locals {
 module "emr_instance_fleet" {
   source = "../.."
 
-  # create = false
   name = "${local.name}-instance-fleet"
 
   release_label_filters = {
-    emr6 = {
-      prefix = "emr-6"
+    emr7 = {
+      prefix = "emr-7"
     }
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
-  bootstrap_action = {
-    example = {
+  bootstrap_action = [
+    {
       path = "file:/bin/echo",
       name = "Just an example",
       args = ["Hello World!"]
     }
-  }
+  ]
 
   configurations_json = jsonencode([
     {
@@ -165,22 +170,22 @@ module "emr_instance_group" {
   create_autoscaling_iam_role = false
 
   release_label_filters = {
-    emr6 = {
-      prefix = "emr-6"
+    emr7 = {
+      prefix = "emr-7"
     }
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
-  bootstrap_action = {
-    example = {
+  bootstrap_action = [
+    {
       name = "Just an example",
       path = "file:/bin/echo",
       args = ["Hello World!"]
     }
-  }
+  ]
 
   configurations_json = jsonencode([
     {
@@ -220,8 +225,8 @@ module "emr_instance_group" {
   task_instance_group = {
     name           = "task-group"
     instance_count = 2
-    instance_type  = "c5.xlarge"
-    bid_price      = "0.1"
+    instance_type  = "c4.xlarge"
+    bid_price      = "0.17"
 
     ebs_config = [{
       size                 = 256
@@ -292,8 +297,7 @@ module "vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "~> 6.0"
 
-  vpc_id             = module.vpc.vpc_id
-  security_group_ids = [module.vpc_endpoints_sg.security_group_id]
+  vpc_id = module.vpc.vpc_id
 
   endpoints = merge({
     s3 = {
@@ -315,24 +319,14 @@ module "vpc_endpoints" {
       }
   })
 
-  tags = local.tags
-}
-
-module "vpc_endpoints_sg" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "~> 5.0"
-
-  name        = "${local.name}-vpc-endpoints"
-  description = "Security group for VPC endpoint access"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress_with_cidr_blocks = [
-    {
-      rule        = "https-443-tcp"
-      description = "VPC CIDR HTTPS"
-      cidr_blocks = join(",", module.vpc.private_subnets_cidr_blocks)
-    },
-  ]
+  # Security group
+  create_security_group = true
+  security_group_rules = {
+    ingress_https = {
+      description = "HTTPS from private subnets"
+      cidr_blocks = module.vpc.private_subnets_cidr_blocks
+    }
+  }
 
   tags = local.tags
 }
@@ -404,8 +398,8 @@ data "aws_iam_policy_document" "autoscaling" {
     principals {
       type = "Service"
       identifiers = [
-        "elasticmapreduce.${data.aws_partition.current.dns_suffix}",
-        "application-autoscaling.${data.aws_partition.current.dns_suffix}"
+        "elasticmapreduce.amazonaws.com",
+        "application-autoscaling.amazonaws.com",
       ]
     }
 
@@ -425,5 +419,5 @@ data "aws_iam_policy_document" "autoscaling" {
 
 resource "aws_iam_role_policy_attachment" "autoscaling" {
   role       = aws_iam_role.autoscaling.name
-  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforAutoScalingRole"
 }

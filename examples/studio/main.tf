@@ -2,7 +2,14 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
 data "aws_caller_identity" "current" {}
 
 locals {
@@ -81,27 +88,25 @@ module "emr_studio_complete" {
 
   # Engine security group
   engine_security_group_description = "EMR Studio complete engine security group"
-  engine_security_group_rules = {
+  engine_security_group_egress_rules = {
     example = {
       description = "Example egress to VPC network"
-      type        = "egress"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = [module.vpc.vpc_cidr_block]
+      ip_protocol = "tcp"
+      cidr_ipv4   = module.vpc.vpc_cidr_block
     }
   }
 
   # Workspace security group
   workspace_security_group_description = "EMR Studio complete workspace security group"
-  workspace_security_group_rules = {
+  workspace_security_group_egress_rules = {
     example = {
       description = "Example egress to internet"
-      type        = "egress"
       from_port   = 443
       to_port     = 443
-      protocol    = "tcp"
-      cidr_blocks = [module.vpc.vpc_cidr_block]
+      ip_protocol = "tcp"
+      cidr_ipv4   = "0.0.0.0/0"
     }
   }
 
@@ -142,8 +147,8 @@ module "emr_studio_iam" {
 
   encryption_key_arn = module.kms.key_arn
 
-  service_role_statements = [
-    {
+  service_role_statements = {
+    "AllowKMS" = {
       effect = "Allow"
       actions = [
         "kms:Decrypt",
@@ -154,7 +159,7 @@ module "emr_studio_iam" {
       ]
       resources = [module.kms.key_arn]
     }
-  ]
+  }
 
   tags = local.tags
 }
@@ -180,9 +185,8 @@ module "vpc" {
   public_subnets  = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k)]
   private_subnets = [for k, v in local.azs : cidrsubnet(local.vpc_cidr, 8, k + 10)]
 
-  enable_nat_gateway   = true
-  single_nat_gateway   = true
-  enable_dns_hostnames = true
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   tags = local.tags
 }

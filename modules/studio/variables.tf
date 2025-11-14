@@ -4,6 +4,12 @@ variable "create" {
   default     = true
 }
 
+variable "region" {
+  description = "Region where the resource(s) will be managed. Defaults to the Region set in the provider configuration"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)
@@ -74,8 +80,13 @@ variable "vpc_id" {
 
 variable "session_mappings" {
   description = "A map of session mapping definitions to apply to the Studio"
-  type        = any
-  default     = {}
+  type = map(object({
+    identity_id        = optional(string)
+    identity_name      = optional(string)
+    identity_type      = string
+    session_policy_arn = optional(string)
+  }))
+  default = null
 }
 
 ################################################################################
@@ -111,6 +122,7 @@ variable "service_role_description" {
   type        = string
   default     = null
 }
+
 variable "service_role_path" {
   description = "IAM role path"
   type        = string
@@ -159,8 +171,28 @@ variable "service_role_s3_bucket_arns" {
 
 variable "service_role_statements" {
   description = "A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) for custom permission usage"
-  type        = any
-  default     = {}
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string, "Allow")
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      variable = string
+      values   = list(string)
+    })))
+  }))
+  default = null
 }
 
 ################################################################################
@@ -238,8 +270,28 @@ variable "user_role_s3_bucket_arns" {
 
 variable "user_role_statements" {
   description = "A map of IAM policy [statements](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document#statement) for custom permission usage"
-  type        = any
-  default     = {}
+  type = map(object({
+    sid           = optional(string)
+    actions       = optional(list(string))
+    not_actions   = optional(list(string))
+    effect        = optional(string, "Allow")
+    resources     = optional(list(string))
+    not_resources = optional(list(string))
+    principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    not_principals = optional(list(object({
+      type        = string
+      identifiers = list(string)
+    })))
+    condition = optional(list(object({
+      test     = string
+      variable = string
+      values   = list(string)
+    })))
+  }))
+  default = null
 }
 
 ################################################################################
@@ -286,10 +338,49 @@ variable "engine_security_group_description" {
   default     = "EMR Studio engine security group"
 }
 
-variable "engine_security_group_rules" {
-  description = "Security group rules to add to the security group created"
-  type        = any
-  default     = {}
+
+variable "engine_security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                              = optional(string)
+    cidr_ipv6                              = optional(string)
+    description                            = optional(string)
+    from_port                              = optional(string)
+    ip_protocol                            = optional(string, "tcp")
+    prefix_list_id                         = optional(string)
+    referenced_security_group_id           = optional(string)
+    referenced_workspace_security_group_id = optional(bool, false)
+    tags                                   = optional(map(string), {})
+    to_port                                = optional(string)
+  }))
+  default = null
+}
+
+variable "engine_security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                              = optional(string)
+    cidr_ipv6                              = optional(string)
+    description                            = optional(string)
+    from_port                              = optional(string)
+    ip_protocol                            = optional(string, "tcp")
+    prefix_list_id                         = optional(string)
+    referenced_security_group_id           = optional(string)
+    referenced_workspace_security_group_id = optional(bool, false)
+    tags                                   = optional(map(string), {})
+    to_port                                = optional(string)
+  }))
+  default = {
+    "all-traffic" = {
+      description = "Allow all egress traffic"
+      ip_protocol = "-1"
+      cidr_ipv4   = "0.0.0.0/0"
+    }
+  }
 }
 
 ################################################################################
@@ -308,8 +399,41 @@ variable "workspace_security_group_description" {
   default     = "EMR Studio workspace security group"
 }
 
-variable "workspace_security_group_rules" {
-  description = "Security group rules to add to the security group created. Note - only egress rules are permitted"
-  type        = any
-  default     = {}
+
+variable "workspace_security_group_ingress_rules" {
+  description = "Security group ingress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                           = optional(string)
+    cidr_ipv6                           = optional(string)
+    description                         = optional(string)
+    from_port                           = optional(string)
+    ip_protocol                         = optional(string, "tcp")
+    prefix_list_id                      = optional(string)
+    referenced_security_group_id        = optional(string)
+    referenced_engine_security_group_id = optional(bool, false)
+    tags                                = optional(map(string), {})
+    to_port                             = optional(string)
+  }))
+  default = null
+}
+
+variable "workspace_security_group_egress_rules" {
+  description = "Security group egress rules to add to the security group created"
+  type = map(object({
+    name = optional(string)
+
+    cidr_ipv4                           = optional(string)
+    cidr_ipv6                           = optional(string)
+    description                         = optional(string)
+    from_port                           = optional(string)
+    ip_protocol                         = optional(string, "tcp")
+    prefix_list_id                      = optional(string)
+    referenced_security_group_id        = optional(string)
+    referenced_engine_security_group_id = optional(bool, false)
+    tags                                = optional(map(string), {})
+    to_port                             = optional(string)
+  }))
+  default = null
 }

@@ -2,7 +2,13 @@ provider "aws" {
   region = local.region
 }
 
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
 
 locals {
   name   = replace(basename(path.cwd), "-cluster", "")
@@ -28,22 +34,22 @@ module "emr_instance_fleet" {
   name = "${local.name}-instance-fleet"
 
   release_label_filters = {
-    emr6 = {
-      prefix = "emr-6"
+    emr7 = {
+      prefix = "emr-7"
     }
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
-  bootstrap_action = {
-    example = {
+  bootstrap_action = [
+    {
       path = "file:/bin/echo",
       name = "Just an example",
       args = ["Hello World!"]
     }
-  }
+  ]
 
   configurations_json = jsonencode([
     {
@@ -155,29 +161,28 @@ module "emr_instance_fleet" {
   tags = local.tags
 }
 
-
 module "emr_instance_group" {
   source = "../.."
 
   name = "${local.name}-instance-group"
 
   release_label_filters = {
-    emr6 = {
-      prefix = "emr-6"
+    emr7 = {
+      prefix = "emr-7"
     }
   }
   applications = ["spark", "trino"]
   auto_termination_policy = {
-    idle_timeout = 3600
+    idle_timeout = 14400
   }
 
-  bootstrap_action = {
-    example = {
+  bootstrap_action = [
+    {
       name = "Just an example",
       path = "file:/bin/echo",
       args = ["Hello World!"]
     }
-  }
+  ]
 
   configurations_json = jsonencode([
     {
@@ -209,8 +214,8 @@ module "emr_instance_group" {
   task_instance_group = {
     name           = "task-group"
     instance_count = 2
-    instance_type  = "c5.xlarge"
-    bid_price      = "0.1"
+    instance_type  = "c4.xlarge"
+    bid_price      = "0.17"
 
     ebs_config = [{
       size                 = 256

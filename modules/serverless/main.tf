@@ -164,7 +164,7 @@ resource "aws_emrserverless_application" "this" {
   }
 
   dynamic "runtime_configuration" {
-    for_each = var.runtime_configuration != null ? [var.runtime_configuration] : []
+    for_each = var.runtime_configuration != null ? var.runtime_configuration : []
 
     content {
       classification = runtime_configuration.value.classification

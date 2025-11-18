@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.0.0...v3.0.1) (2025-11-18)
+
+### Bug Fixes
+
+* EMR Serverless `runtime_configuration` should support multiple configurtions  ([#47](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/47)) ([9e11092](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/9e11092cd496e74fb78d948085641eaf9dbb3319))
+
 ## [3.0.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v2.4.3...v3.0.0) (2025-11-14)
 
 ### ⚠ BREAKING CHANGES

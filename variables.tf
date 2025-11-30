@@ -402,6 +402,8 @@ variable "managed_scaling_policy" {
     maximum_ondemand_capacity_units = optional(number)
     minimum_capacity_units          = number
     unit_type                       = string
+    scaling_strategy                = optional(string)
+    utilization_performance_index   = optional(number)
   })
   default = null
 }

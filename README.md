@@ -332,13 +332,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.22 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.22 |
 
 ## Modules
 
@@ -419,7 +419,7 @@ No modules.
 | <a name="input_list_steps_states"></a> [list\_steps\_states](#input\_list\_steps\_states) | List of [step states](https://docs.aws.amazon.com/emr/latest/APIReference/API_StepStatus.html) used to filter returned steps | `list(string)` | `[]` | no |
 | <a name="input_log_encryption_kms_key_id"></a> [log\_encryption\_kms\_key\_id](#input\_log\_encryption\_kms\_key\_id) | AWS KMS customer master key (CMK) key ID or arn used for encrypting log files. This attribute is only available with EMR version 5.30.0 and later, excluding EMR 6.0.0 | `string` | `null` | no |
 | <a name="input_log_uri"></a> [log\_uri](#input\_log\_uri) | S3 bucket to write the log files of the job flow. If a value is not provided, logs are not created | `string` | `null` | no |
-| <a name="input_managed_scaling_policy"></a> [managed\_scaling\_policy](#input\_managed\_scaling\_policy) | Compute limit configuration for a [Managed Scaling Policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html) | <pre>object({<br/>    maximum_capacity_units          = number<br/>    maximum_core_capacity_units     = optional(number)<br/>    maximum_ondemand_capacity_units = optional(number)<br/>    minimum_capacity_units          = number<br/>    unit_type                       = string<br/>  })</pre> | `null` | no |
+| <a name="input_managed_scaling_policy"></a> [managed\_scaling\_policy](#input\_managed\_scaling\_policy) | Compute limit configuration for a [Managed Scaling Policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-scaling.html) | <pre>object({<br/>    maximum_capacity_units          = number<br/>    maximum_core_capacity_units     = optional(number)<br/>    maximum_ondemand_capacity_units = optional(number)<br/>    minimum_capacity_units          = number<br/>    unit_type                       = string<br/>    scaling_strategy                = optional(string)<br/>    utilization_performance_index   = optional(number)<br/>  })</pre> | `null` | no |
 | <a name="input_managed_security_group_name"></a> [managed\_security\_group\_name](#input\_managed\_security\_group\_name) | Name to use on manged security group created. Note - `-master`, `-slave`, and `-service` will be appended to this name to distinguish | `string` | `null` | no |
 | <a name="input_managed_security_group_tags"></a> [managed\_security\_group\_tags](#input\_managed\_security\_group\_tags) | A map of additional tags to add to the security group created | `map(string)` | `{}` | no |
 | <a name="input_managed_security_group_use_name_prefix"></a> [managed\_security\_group\_use\_name\_prefix](#input\_managed\_security\_group\_use\_name\_prefix) | Determines whether the security group name (`security_group_name`) is used as a prefix | `bool` | `true` | no |

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.0.1...v3.1.0) (2025-11-30)
+
+### Features
+
+* Support `scaling_strategy` and `utilization_performance_index` for EMR managed scaling policy ([#48](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/48)) ([61da1c0](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/61da1c09022927371f1576ddc4062479c5689077))
+
 ## [3.0.1](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.0.0...v3.0.1) (2025-11-18)
 
 ### Bug Fixes

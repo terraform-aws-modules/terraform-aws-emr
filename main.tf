@@ -484,8 +484,8 @@ resource "aws_emr_managed_scaling_policy" "this" {
     unit_type                       = var.managed_scaling_policy.unit_type
   }
 
-  scaling_strategy              = var.scaling_strategy
-  utilization_performance_index = var.utilization_performance_index
+  scaling_strategy              = var.managed_scaling_policy.scaling_strategy
+  utilization_performance_index = var.managed_scaling_policy.utilization_performance_index
 }
 
 ################################################################################

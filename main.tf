@@ -483,6 +483,9 @@ resource "aws_emr_managed_scaling_policy" "this" {
     minimum_capacity_units          = var.managed_scaling_policy.minimum_capacity_units
     unit_type                       = var.managed_scaling_policy.unit_type
   }
+
+  scaling_strategy              = var.scaling_strategy
+  utilization_performance_index = var.utilization_performance_index
 }
 
 ################################################################################

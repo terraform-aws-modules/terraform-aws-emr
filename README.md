@@ -332,13 +332,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.19 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.22 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.19 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.22 |
 
 ## Modules
 
@@ -435,6 +435,7 @@ No modules.
 | <a name="input_release_label"></a> [release\_label](#input\_release\_label) | Release label for the Amazon EMR release | `string` | `null` | no |
 | <a name="input_release_label_filters"></a> [release\_label\_filters](#input\_release\_label\_filters) | Map of release label filters use to lookup a release label | <pre>map(object({<br/>    application = optional(string)<br/>    prefix      = optional(string)<br/>  }))</pre> | <pre>{<br/>  "default": {<br/>    "prefix": "emr-7"<br/>  }<br/>}</pre> | no |
 | <a name="input_scale_down_behavior"></a> [scale\_down\_behavior](#input\_scale\_down\_behavior) | Way that individual Amazon EC2 instances terminate when an automatic scale-in activity occurs or an instance group is resized | `string` | `"TERMINATE_AT_TASK_COMPLETION"` | no |
+| <a name="input_scaling_strategy"></a> [scaling\_strategy](#input\_scaling\_strategy) | Specifies the scaling strategy. When set to ADVANCED, the utilization\_performance\_index argument can be used to configure an advanced scaling strategy. An advanced scaling strategy requires Amazon EMR on EC2 version 7.0 or later. Valid values: ADVANCED, DEFAULT | `string` | `null` | no |
 | <a name="input_security_configuration"></a> [security\_configuration](#input\_security\_configuration) | Security configuration to create, or attach if `create_security_configuration` is `false`. Only valid for EMR clusters with `release_label` 4.8.0 or greater | `string` | `null` | no |
 | <a name="input_security_configuration_name"></a> [security\_configuration\_name](#input\_security\_configuration\_name) | Name of the security configuration to create, or attach if `create_security_configuration` is `false`. Only valid for EMR clusters with `release_label` 4.8.0 or greater | `string` | `null` | no |
 | <a name="input_security_configuration_use_name_prefix"></a> [security\_configuration\_use\_name\_prefix](#input\_security\_configuration\_use\_name\_prefix) | Determines whether `security_configuration_name` is used as a prefix | `bool` | `true` | no |
@@ -457,6 +458,7 @@ No modules.
 | <a name="input_task_instance_group"></a> [task\_instance\_group](#input\_task\_instance\_group) | Configuration block to use an [Instance Group](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-group-configuration.html#emr-plan-instance-groups) for the [task node type](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-master-core-task-nodes.html#emr-plan-master) | <pre>object({<br/>    autoscaling_policy  = optional(string)<br/>    bid_price           = optional(string)<br/>    configurations_json = optional(string)<br/>    ebs_config = optional(list(object({<br/>      iops                 = optional(number)<br/>      size                 = optional(number, 256)<br/>      type                 = optional(string, "gp3")<br/>      volumes_per_instance = optional(number)<br/>    })))<br/>    ebs_optimized  = optional(bool, true)<br/>    instance_count = optional(number)<br/>    instance_type  = string<br/>    name           = optional(string)<br/>  })</pre> | `null` | no |
 | <a name="input_termination_protection"></a> [termination\_protection](#input\_termination\_protection) | Switch on/off termination protection (default is `false`, except when using multiple master nodes). Before attempting to destroy the resource when termination protection is enabled, this configuration must be applied with its value set to `false` | `bool` | `null` | no |
 | <a name="input_unhealthy_node_replacement"></a> [unhealthy\_node\_replacement](#input\_unhealthy\_node\_replacement) | Whether whether Amazon EMR should gracefully replace core nodes that have degraded within the cluster. Default value is `true` | `bool` | `true` | no |
+| <a name="input_utilization_performance_index"></a> [utilization\_performance\_index](#input\_utilization\_performance\_index) | Integer value that represents the advanced scaling strategy. Higher values optimize for performance, while lower values optimize for resource conservation. A value of 50 provides a balance between performance and resource conservation. Required when scaling\_strategy is set to ADVANCED. Valid values: 1, 25, 50, 75, 100 | `number` | `null` | no |
 | <a name="input_visible_to_all_users"></a> [visible\_to\_all\_users](#input\_visible\_to\_all\_users) | Whether the job flow is visible to all IAM users of the AWS account associated with the job flow. Default value is `true` | `bool` | `null` | no |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the Amazon Virtual Private Cloud (Amazon VPC) where the security groups will be created | `string` | `""` | no |
 

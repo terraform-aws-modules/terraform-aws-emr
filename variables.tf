@@ -406,6 +406,18 @@ variable "managed_scaling_policy" {
   default = null
 }
 
+variable "scaling_strategy" {
+  description = "Specifies the scaling strategy. When set to ADVANCED, the utilization_performance_index argument can be used to configure an advanced scaling strategy. An advanced scaling strategy requires Amazon EMR on EC2 version 7.0 or later. Valid values: ADVANCED, DEFAULT"
+  type        = string
+  default     = null
+}
+
+variable "utilization_performance_index" {
+  description = "Integer value that represents the advanced scaling strategy. Higher values optimize for performance, while lower values optimize for resource conservation. A value of 50 provides a balance between performance and resource conservation. Required when scaling_strategy is set to ADVANCED. Valid values: 1, 25, 50, 75, 100"
+  type        = number
+  default     = null
+}
+
 ################################################################################
 # Security Configuration
 ################################################################################

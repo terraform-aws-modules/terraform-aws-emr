@@ -26,8 +26,6 @@ locals {
   elasticmapreduce_sp_name = try(data.aws_service_principal.elasticmapreduce[0].name, "")
 
   auth_mode_is_sso = var.auth_mode == "SSO"
-
-  tags = merge(var.tags, { terraform-aws-modules = "emr" })
 }
 
 ################################################################################
@@ -53,7 +51,7 @@ resource "aws_emr_studio" "this" {
   vpc_id                         = var.vpc_id
   workspace_security_group_id    = local.create_security_groups ? aws_security_group.workspace[0].id : var.workspace_security_group_id
 
-  tags = local.tags
+  tags = var.tags
 }
 
 ################################################################################
@@ -79,7 +77,7 @@ resource "aws_iam_role" "service" {
   permissions_boundary  = var.service_role_permissions_boundary
   force_detach_policies = true
 
-  tags = merge(local.tags, var.service_role_tags)
+  tags = merge(var.tags, var.service_role_tags)
 }
 
 data "aws_iam_policy_document" "service_assume" {
@@ -369,7 +367,7 @@ resource "aws_iam_policy" "service" {
 
   policy = data.aws_iam_policy_document.service[0].json
 
-  tags = merge(local.tags, var.service_role_tags)
+  tags = merge(var.tags, var.service_role_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "service" {
@@ -424,7 +422,7 @@ resource "aws_iam_role" "user" {
   permissions_boundary  = var.user_role_permissions_boundary
   force_detach_policies = true
 
-  tags = merge(local.tags, var.user_role_tags)
+  tags = merge(var.tags, var.user_role_tags)
 }
 
 data "aws_iam_policy_document" "user_assume" {
@@ -666,7 +664,7 @@ resource "aws_iam_policy" "user" {
 
   policy = data.aws_iam_policy_document.user[0].json
 
-  tags = merge(local.tags, var.user_role_tags)
+  tags = merge(var.tags, var.user_role_tags)
 }
 
 resource "aws_iam_role_policy_attachment" "user" {
@@ -714,7 +712,7 @@ resource "aws_security_group" "engine" {
   vpc_id      = var.vpc_id
 
   tags = merge(
-    local.tags,
+    var.tags,
     var.security_group_tags,
     { "Name" = local.engine_security_group_name },
   )
@@ -815,7 +813,7 @@ resource "aws_security_group" "workspace" {
   vpc_id      = var.vpc_id
 
   tags = merge(
-    local.tags,
+    var.tags,
     var.security_group_tags,
     { "Name" = local.workspace_security_group_name },
   )

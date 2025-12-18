@@ -42,7 +42,7 @@ locals {
   ec2_sp_name                     = try(data.aws_service_principal.this["ec2"].name, "")
   elasticmapreduce_sp_name        = try(data.aws_service_principal.this["elasticmapreduce"].name, "")
 
-  tags = merge(var.tags, { terraform-aws-modules = "emr" })
+  tags = var.tags
 }
 
 ################################################################################

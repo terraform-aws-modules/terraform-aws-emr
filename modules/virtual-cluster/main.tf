@@ -10,8 +10,6 @@ locals {
   role_name                 = var.create_kubernetes_role ? try(kubernetes_role_v1.this[0].metadata[0].name, "") : local.internal_role_name
   namespace                 = var.create_namespace ? try(kubernetes_namespace_v1.this[0].metadata[0].name, "") : var.namespace
   cloudwatch_log_group_name = coalesce(var.cloudwatch_log_group_name, "/emr-on-eks-logs/emr-workload/${local.namespace}")
-
-  tags = merge(var.tags, { terraform-aws-modules = "emr" })
 }
 
 ################################################################################
@@ -36,7 +34,7 @@ resource "aws_emrcontainers_virtual_cluster" "this" {
     }
   }
 
-  tags = local.tags
+  tags = var.tags
 }
 
 ################################################################################
@@ -228,7 +226,7 @@ resource "aws_iam_role" "this" {
   permissions_boundary  = var.iam_role_permissions_boundary
   force_detach_policies = true
 
-  tags = local.tags
+  tags = var.tags
 }
 
 resource "aws_iam_policy" "this" {
@@ -241,7 +239,7 @@ resource "aws_iam_policy" "this" {
 
   policy = data.aws_iam_policy_document.this[0].json
 
-  tags = local.tags
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "this" {
@@ -274,5 +272,5 @@ resource "aws_cloudwatch_log_group" "this" {
   log_group_class   = var.cloudwatch_log_group_class
   skip_destroy      = var.cloudwatch_log_group_skip_destroy
 
-  tags = local.tags
+  tags = var.tags
 }

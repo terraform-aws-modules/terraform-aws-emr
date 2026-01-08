@@ -4,11 +4,17 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 6.22"
+      version = ">= 6.28"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.38"
     }
+  }
+
+  provider_meta "aws" {
+    user_agent = [
+      "github.com/terraform-aws-modules/terraform-aws-emr"
+    ]
   }
 }

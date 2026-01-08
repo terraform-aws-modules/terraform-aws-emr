@@ -13,10 +13,6 @@ data "aws_emr_release_labels" "this" {
   }
 }
 
-locals {
-  tags = merge(var.tags, { terraform-aws-modules = "emr" })
-}
-
 ################################################################################
 # Application
 ################################################################################
@@ -183,7 +179,7 @@ resource "aws_emrserverless_application" "this" {
 
   type = var.type
 
-  tags = local.tags
+  tags = var.tags
 }
 
 ################################################################################
@@ -214,7 +210,7 @@ resource "aws_security_group" "this" {
   vpc_id      = data.aws_subnet.this[0].vpc_id
 
   tags = merge(
-    local.tags,
+    var.tags,
     var.security_group_tags,
     { "Name" = local.security_group_name },
   )

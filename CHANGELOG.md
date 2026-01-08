@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.1.0...v3.2.0) (2026-01-08)
+
+### Features
+
+* Add provider meta user-agent, replacing static tag ([#49](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/49)) ([70d83d3](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/70d83d3c172eeac3cb308977887cdecf8c0cf09a))
+
 ## [3.1.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.0.1...v3.1.0) (2025-11-30)
 
 ### Features

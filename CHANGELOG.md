@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.2.0...v3.3.0) (2026-03-11)
+
+### Features
+
+* Support `job_level_allocation_configuration` ([#51](https://github.com/terraform-aws-modules/terraform-aws-emr/issues/51)) ([c36e869](https://github.com/terraform-aws-modules/terraform-aws-emr/commit/c36e8693e7519d22ac199406308fa8b77d624386))
+
 ## [3.2.0](https://github.com/terraform-aws-modules/terraform-aws-emr/compare/v3.1.0...v3.2.0) (2026-01-08)
 
 ### Features

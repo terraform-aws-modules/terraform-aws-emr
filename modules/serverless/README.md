@@ -132,13 +132,13 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
 
@@ -167,6 +167,7 @@ No modules.
 | <a name="input_image_configuration"></a> [image\_configuration](#input\_image\_configuration) | The image configuration applied to all worker types | <pre>object({<br/>    image_uri = string<br/>  })</pre> | `null` | no |
 | <a name="input_initial_capacity"></a> [initial\_capacity](#input\_initial\_capacity) | The capacity to initialize when the application is created | <pre>map(object({<br/>    initial_capacity_config = optional(object({<br/>      worker_configuration = optional(object({<br/>        cpu    = string<br/>        disk   = optional(string)<br/>        memory = string<br/>      }))<br/>      worker_count = optional(number, 1)<br/>    }))<br/>    initial_capacity_type = string<br/>  }))</pre> | `null` | no |
 | <a name="input_interactive_configuration"></a> [interactive\_configuration](#input\_interactive\_configuration) | Enables the interactive use cases to use when running an application | <pre>object({<br/>    livy_endpoint_enabled = optional(bool)<br/>    studio_enabled        = optional(bool)<br/>  })</pre> | `null` | no |
+| <a name="input_job_level_cost_allocation_configuration"></a> [job\_level\_cost\_allocation\_configuration](#input\_job\_level\_cost\_allocation\_configuration) | Configuration block for job-level cost allocation | <pre>object({<br/>    enabled = optional(bool)<br/>  })</pre> | `null` | no |
 | <a name="input_maximum_capacity"></a> [maximum\_capacity](#input\_maximum\_capacity) | The maximum capacity to allocate when the application is created. This is cumulative across all workers at any given point in time, not just when an application is created. No new resources will be created once any one of the defined limits is hit | <pre>object({<br/>    cpu    = string<br/>    disk   = optional(string)<br/>    memory = string<br/>  })</pre> | `null` | no |
 | <a name="input_monitoring_configuration"></a> [monitoring\_configuration](#input\_monitoring\_configuration) | The monitoring configuration for the application | <pre>object({<br/>    cloudwatch_logging_configuration = optional(object({<br/>      enabled                = optional(bool)<br/>      log_group_name         = optional(string)<br/>      log_stream_name_prefix = optional(string)<br/>      encryption_key_arn     = optional(string)<br/>      log_types = optional(list(object({<br/>        name   = string<br/>        values = list(string)<br/>      })))<br/>    }))<br/>    managed_persistence_monitoring_configuration = optional(object({<br/>      enabled            = optional(bool)<br/>      encryption_key_arn = optional(string)<br/>    }))<br/>    prometheus_monitoring_configuration = optional(object({<br/>      remote_write_url = optional(string)<br/>    }))<br/>    s3_monitoring_configuration = optional(object({<br/>      log_uri            = optional(string)<br/>      encryption_key_arn = optional(string)<br/>    }))<br/>  })</pre> | `null` | no |
 | <a name="input_name"></a> [name](#input\_name) | The name of the application | `string` | `""` | no |

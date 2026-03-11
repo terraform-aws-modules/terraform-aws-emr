@@ -84,6 +84,14 @@ resource "aws_emrserverless_application" "this" {
     }
   }
 
+  dynamic "job_level_cost_allocation_configuration" {
+    for_each = var.job_level_cost_allocation_configuration != null ? [var.job_level_cost_allocation_configuration] : []
+
+    content {
+      enabled = job_level_cost_allocation_configuration.value.enabled
+    }
+  }
+
   dynamic "maximum_capacity" {
     for_each = var.maximum_capacity != null ? [var.maximum_capacity] : []
 
@@ -187,7 +195,7 @@ resource "aws_emrserverless_application" "this" {
 ################################################################################
 
 locals {
-  create_security_group = var.create && var.create_security_group && try(var.network_configuration.subnet_ids, null) != null
+  create_security_group = var.create && var.create_security_group && try(length(var.network_configuration.subnet_ids), 0) > 0
   security_group_name   = try(coalesce(var.security_group_name, var.name), "")
 }
 

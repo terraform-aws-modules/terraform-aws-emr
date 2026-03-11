@@ -76,6 +76,14 @@ variable "interactive_configuration" {
   default = null
 }
 
+variable "job_level_cost_allocation_configuration" {
+  description = "Configuration block for job-level cost allocation"
+  type = object({
+    enabled = optional(bool)
+  })
+  default = null
+}
+
 variable "maximum_capacity" {
   description = "The maximum capacity to allocate when the application is created. This is cumulative across all workers at any given point in time, not just when an application is created. No new resources will be created once any one of the defined limits is hit"
   type = object({

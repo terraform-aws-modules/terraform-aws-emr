@@ -330,14 +330,14 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
@@ -347,7 +347,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_emr_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_cluster) | resource |
 | [aws_emr_instance_fleet.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_instance_fleet) | resource |
 | [aws_emr_instance_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_instance_group) | resource |
@@ -384,7 +384,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_additional_info"></a> [additional\_info](#input\_additional\_info) | JSON string for selecting additional features such as adding proxy information. Note: Currently there is no API to retrieve the value of this argument after EMR cluster creation from provider, therefore Terraform cannot detect drift from the actual EMR cluster if its value is changed outside Terraform | `string` | `null` | no |
 | <a name="input_applications"></a> [applications](#input\_applications) | A case-insensitive list of applications for Amazon EMR to install and configure when launching the cluster | `list(string)` | `[]` | no |
 | <a name="input_auto_termination_policy"></a> [auto\_termination\_policy](#input\_auto\_termination\_policy) | An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of idle time in seconds after which a cluster automatically terminates | <pre>object({<br/>    idle_timeout = optional(number)<br/>  })</pre> | `null` | no |
@@ -463,7 +463,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_autoscaling_iam_role_arn"></a> [autoscaling\_iam\_role\_arn](#output\_autoscaling\_iam\_role\_arn) | Autoscaling IAM role ARN |
 | <a name="output_autoscaling_iam_role_name"></a> [autoscaling\_iam\_role\_name](#output\_autoscaling\_iam\_role\_name) | Autoscaling IAM role name |
 | <a name="output_autoscaling_iam_role_unique_id"></a> [autoscaling\_iam\_role\_unique\_id](#output\_autoscaling\_iam\_role\_unique\_id) | Stable and unique string identifying the autoscaling IAM role |

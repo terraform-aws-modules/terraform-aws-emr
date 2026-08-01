@@ -27,20 +27,20 @@ Note that this example may create resources which will incur monetary charges on
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_emr_disabled"></a> [emr\_disabled](#module\_emr\_disabled) | ../.. | n/a |
 | <a name="module_emr_instance_fleet"></a> [emr\_instance\_fleet](#module\_emr\_instance\_fleet) | ../.. | n/a |
 | <a name="module_emr_instance_group"></a> [emr\_instance\_group](#module\_emr\_instance\_group) | ../.. | n/a |
@@ -51,7 +51,7 @@ Note that this example may create resources which will incur monetary charges on
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_iam_instance_profile.custom_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.autoscaling](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.custom_instance_profile](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -69,7 +69,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_disabled_autoscaling_iam_role_arn"></a> [disabled\_autoscaling\_iam\_role\_arn](#output\_disabled\_autoscaling\_iam\_role\_arn) | Autoscaling IAM role ARN |
 | <a name="output_disabled_autoscaling_iam_role_name"></a> [disabled\_autoscaling\_iam\_role\_name](#output\_disabled\_autoscaling\_iam\_role\_name) | Autoscaling IAM role name |
 | <a name="output_disabled_autoscaling_iam_role_unique_id"></a> [disabled\_autoscaling\_iam\_role\_unique\_id](#output\_disabled\_autoscaling\_iam\_role\_unique\_id) | Stable and unique string identifying the autoscaling IAM role |

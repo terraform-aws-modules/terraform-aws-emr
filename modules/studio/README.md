@@ -66,14 +66,14 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.28 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.28 |
 
 ## Modules
@@ -83,7 +83,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_emr_studio.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_studio) | resource |
 | [aws_emr_studio_session_mapping.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emr_studio_session_mapping) | resource |
 | [aws_iam_policy.service](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
@@ -112,7 +112,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_auth_mode"></a> [auth\_mode](#input\_auth\_mode) | Specifies whether the Studio authenticates users using IAM or Amazon Web Services SSO. Valid values are `SSO` or `IAM` | `string` | `"IAM"` | no |
 | <a name="input_create"></a> [create](#input\_create) | Controls if resources should be created (affects nearly all resources) | `bool` | `true` | no |
 | <a name="input_create_security_groups"></a> [create\_security\_groups](#input\_create\_security\_groups) | Determines whether security groups for the EMR Studio engine and workspace are created | `bool` | `true` | no |
@@ -167,7 +167,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | ARN of the studio |
 | <a name="output_engine_security_group_arn"></a> [engine\_security\_group\_arn](#output\_engine\_security\_group\_arn) | Amazon Resource Name (ARN) of the engine security group |
 | <a name="output_engine_security_group_id"></a> [engine\_security\_group\_id](#output\_engine\_security\_group\_id) | ID of the engine security group |

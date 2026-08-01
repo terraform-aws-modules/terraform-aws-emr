@@ -130,14 +130,14 @@ Examples codified under the [`examples`](https://github.com/terraform-aws-module
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
@@ -147,7 +147,7 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_emrserverless_application.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/emrserverless_application) | resource |
 | [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_vpc_security_group_egress_rule.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_egress_rule) | resource |
@@ -158,7 +158,7 @@ No modules.
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_architecture"></a> [architecture](#input\_architecture) | The CPU architecture of an application. Valid values are `ARM64` or `X86_64`. Default value is `X86_64` | `string` | `null` | no |
 | <a name="input_auto_start_configuration"></a> [auto\_start\_configuration](#input\_auto\_start\_configuration) | The configuration for an application to automatically start on job submission | <pre>object({<br/>    enabled = optional(bool)<br/>  })</pre> | `null` | no |
 | <a name="input_auto_stop_configuration"></a> [auto\_stop\_configuration](#input\_auto\_stop\_configuration) | The configuration for an application to automatically stop after a certain amount of time being idle | <pre>object({<br/>    enabled              = optional(bool)<br/>    idle_timeout_minutes = optional(number)<br/>  })</pre> | `null` | no |
@@ -189,7 +189,7 @@ No modules.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_arn"></a> [arn](#output\_arn) | Amazon Resource Name (ARN) of the application |
 | <a name="output_id"></a> [id](#output\_id) | ID of the application |
 | <a name="output_security_group_arn"></a> [security\_group\_arn](#output\_security\_group\_arn) | Amazon Resource Name (ARN) of the security group |

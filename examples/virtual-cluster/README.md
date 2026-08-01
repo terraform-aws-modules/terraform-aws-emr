@@ -39,7 +39,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | >= 2.38 |
@@ -49,14 +49,14 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 | <a name="provider_null"></a> [null](#provider\_null) | >= 3.0 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_complete"></a> [complete](#module\_complete) | ../../modules/virtual-cluster | n/a |
 | <a name="module_default"></a> [default](#module\_default) | ../../modules/virtual-cluster | n/a |
 | <a name="module_disabled"></a> [disabled](#module\_disabled) | ../../modules/virtual-cluster | n/a |
@@ -68,7 +68,7 @@ aws emr-containers list-virtual-clusters --region us-west-2 --states ARRESTED \
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [null_resource.s3_sync](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.start_job_run](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
@@ -80,7 +80,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_complete_cloudwatch_log_group_arn"></a> [complete\_cloudwatch\_log\_group\_arn](#output\_complete\_cloudwatch\_log\_group\_arn) | Arn of cloudwatch log group created |
 | <a name="output_complete_cloudwatch_log_group_name"></a> [complete\_cloudwatch\_log\_group\_name](#output\_complete\_cloudwatch\_log\_group\_name) | Name of cloudwatch log group created |
 | <a name="output_complete_job_execution_role_arn"></a> [complete\_job\_execution\_role\_arn](#output\_complete\_job\_execution\_role\_arn) | IAM role ARN of the job execution role |

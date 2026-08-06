@@ -25,20 +25,20 @@ Note that this example may create resources which will incur monetary charges on
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_emr_serverless_disabled"></a> [emr\_serverless\_disabled](#module\_emr\_serverless\_disabled) | ../../modules/serverless | n/a |
 | <a name="module_emr_serverless_hive"></a> [emr\_serverless\_hive](#module\_emr\_serverless\_hive) | ../../modules/serverless | n/a |
 | <a name="module_emr_serverless_spark"></a> [emr\_serverless\_spark](#module\_emr\_serverless\_spark) | ../../modules/serverless | n/a |
@@ -47,7 +47,7 @@ Note that this example may create resources which will incur monetary charges on
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
 ## Inputs
@@ -57,7 +57,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_disabled_arn"></a> [disabled\_arn](#output\_disabled\_arn) | Amazon Resource Name (ARN) of the application |
 | <a name="output_disabled_id"></a> [disabled\_id](#output\_disabled\_id) | ID of the application |
 | <a name="output_disabled_security_group_arn"></a> [disabled\_security\_group\_arn](#output\_disabled\_security\_group\_arn) | Amazon Resource Name (ARN) of the security group |

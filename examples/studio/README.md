@@ -20,20 +20,20 @@ terraform apply
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.7 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.35 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.35 |
 
 ## Modules
 
 | Name | Source | Version |
-|------|--------|---------|
+| ---- | ------ | ------- |
 | <a name="module_emr_studio_complete"></a> [emr\_studio\_complete](#module\_emr\_studio\_complete) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_disabled"></a> [emr\_studio\_disabled](#module\_emr\_studio\_disabled) | ../../modules/studio | n/a |
 | <a name="module_emr_studio_iam"></a> [emr\_studio\_iam](#module\_emr\_studio\_iam) | ../../modules/studio | n/a |
@@ -45,7 +45,7 @@ terraform apply
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_identitystore_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/identitystore_group) | data source |
@@ -58,7 +58,7 @@ No inputs.
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_complete_arn"></a> [complete\_arn](#output\_complete\_arn) | ARN of the studio |
 | <a name="output_complete_engine_security_group_arn"></a> [complete\_engine\_security\_group\_arn](#output\_complete\_engine\_security\_group\_arn) | Amazon Resource Name (ARN) of the engine security group |
 | <a name="output_complete_engine_security_group_id"></a> [complete\_engine\_security\_group\_id](#output\_complete\_engine\_security\_group\_id) | ID of the engine security group |
